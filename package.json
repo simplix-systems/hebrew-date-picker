@@ -1,0 +1,140 @@
+{
+  "name": "@simplix-systems/hebrew-date-picker",
+  "version": "1.11.0",
+  "description": "A beautiful, fully-featured Hebrew & Gregorian date picker with holidays, Parashat HaShavua, range selection and keyboard shortcuts. Framework-agnostic core with Vue, React, Svelte and Angular wrappers.",
+  "keywords": [
+    "datepicker",
+    "date-picker",
+    "hebrew",
+    "hebrew-calendar",
+    "jewish",
+    "luach",
+    "gregorian",
+    "calendar",
+    "parasha",
+    "parashat-hashavua",
+    "vue",
+    "react",
+    "svelte",
+    "angular",
+    "rtl"
+  ],
+  "license": "MIT",
+  "author": "Simplix Systems",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/simplix-systems/hebrew-date-picker#readme",
+  "bugs": {
+    "url": "https://github.com/simplix-systems/hebrew-date-picker/issues"
+  },
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/core/index.cjs",
+  "module": "./dist/core/index.js",
+  "types": "./dist/core/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "require": "./dist/core/index.cjs"
+    },
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "import": "./dist/vue/index.js",
+      "require": "./dist/vue/index.cjs"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js",
+      "require": "./dist/react/index.cjs"
+    },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "svelte": "./dist/svelte/index.js",
+      "import": "./dist/svelte/index.js"
+    },
+    "./angular": {
+      "types": "./dist/angular/index.d.ts",
+      "import": "./dist/angular/index.js",
+      "require": "./dist/angular/index.cjs"
+    },
+    "./style.css": "./dist/hebrew-datepicker.css",
+    "./styles": "./dist/hebrew-datepicker.css",
+    "./webcomponent": {
+      "types": "./dist/webcomponent/index.d.ts",
+      "import": "./dist/webcomponent/index.js",
+      "require": "./dist/webcomponent/index.cjs"
+    },
+    "./web-component": {
+      "types": "./dist/webcomponent/index.d.ts",
+      "import": "./dist/webcomponent/index.js",
+      "require": "./dist/webcomponent/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.he.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup && tsup --config tsup.browser.config.ts && npm run build:css && npm run build:svelte",
+    "build:css": "node scripts/copy-css.mjs",
+    "build:svelte": "svelte-package -i src/svelte -o dist/svelte || echo 'svelte-package optional'",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test",
+    "dev": "tsup --watch",
+    "pretest": "tsc -p tsconfig.test.json && node -e \"require('fs').writeFileSync('lib-cjs/package.json','{\\\"type\\\":\\\"commonjs\\\"}')\"",
+    "test:tz": "cross-env TZ=Asia/Jerusalem node --test"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=15.0.0",
+    "@angular/forms": ">=15.0.0",
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0",
+    "svelte": ">=4.0.0",
+    "vue": ">=3.2.0"
+  },
+  "peerDependenciesMeta": {
+    "vue": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    },
+    "@angular/forms": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@angular/core": "^17.0.0",
+    "@angular/forms": "^17.0.0",
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "svelte": "^4.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vue": "^3.4.0",
+    "cross-env": "^7.0.3",
+    "jsdom": "^24.0.0"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simplix-systems/hebrew-date-picker.git"
+  }
+}

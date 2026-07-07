@@ -1,0 +1,513 @@
+/* hebrew-datepicker.css
+ * Self-contained, themeable styles. Override any --hdp-* variable to restyle.
+ * All class names are prefixed `hdp-` to avoid collisions.
+ */
+.hdp {
+  --hdp-bg: #ffffff;
+  --hdp-text: #111827;
+  --hdp-muted: #6b7280;
+  --hdp-border: #e5e7eb;
+  --hdp-primary: #4c5fd8;
+  --hdp-primary-soft: rgba(76, 95, 216, 0.12);
+  --hdp-today: #f59e0b;
+  --hdp-shabbat-bg: #fef3c7;
+  --hdp-holiday: #c026d3;
+  --hdp-radius: 12px;
+  --hdp-radius-sm: 6px;
+  --hdp-shadow: 0 12px 32px rgba(16, 24, 40, 0.18);
+  --hdp-cell-bg: #f9fafb;
+  --hdp-font: inherit;
+  /* Per-row height of the day grid. The day grid uses as many rows as the month
+     needs (5, or 6 when it overflows); the months/years grids are sized to match
+     a 5-row day view so the popup keeps a stable height. Sizes override this. */
+  --hdp-row-h: 50px;
+  /* Extra height (subtitle + weekday header) the day view has over the
+     months/years views — reserved in those views so the popup never jumps. */
+  --hdp-head-extra: 50px;
+
+  box-sizing: border-box;
+  background: var(--hdp-bg);
+  color: var(--hdp-text);
+  font-family: var(--hdp-font);
+  border: 1px solid var(--hdp-border);
+  border-radius: var(--hdp-radius);
+  overflow: hidden; /* nothing escapes the rounded frame (box-shadow is unaffected) */
+}
+.hdp *, .hdp *::before, .hdp *::after { box-sizing: border-box; }
+
+.hdp-popup {
+  position: fixed;
+  z-index: 9999;
+  box-shadow: var(--hdp-shadow);
+  animation: hdp-fade 0.15s ease;
+}
+.hdp-inline { display: inline-block; }
+@keyframes hdp-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Tabs */
+.hdp-tabs { display: flex; border-bottom: 1px solid var(--hdp-border); }
+.hdp-tab {
+  flex: 1; padding: 10px; background: transparent; border: none;
+  border-bottom: 2px solid transparent; cursor: pointer; font: inherit;
+  font-weight: 600; color: var(--hdp-muted); transition: color 0.15s, border-color 0.15s;
+}
+.hdp-tab:hover { color: var(--hdp-text); }
+.hdp-tab.is-active { color: var(--hdp-primary); border-bottom-color: var(--hdp-primary); }
+
+/* Body / columns */
+.hdp-body { padding: 12px; }
+.hdp-body.hdp-range { display: flex; gap: 12px; }
+.hdp-col { width: 250px; }
+.hdp-col-label {
+  font-size: 12px; font-weight: 700; color: var(--hdp-primary);
+  text-align: center; padding-bottom: 6px;
+}
+
+/* Calendar — a fixed-height flex column so the day / months / years views all
+   occupy the SAME height (the popup never jumps when you open the grid). */
+.hdp-cal {
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+.hdp-head { display: flex; align-items: center; gap: 4px; padding: 2px 2px 8px; flex: 0 0 auto; }
+.hdp-nav {
+  background: transparent; border: 1px solid var(--hdp-border);
+  border-radius: var(--hdp-radius-sm); width: 28px; height: 28px; cursor: pointer;
+  font-size: 18px; line-height: 1; display: flex; align-items: center;
+  justify-content: center; color: var(--hdp-text);
+  flex: 0 0 auto; /* never shrink into / overlap the title */
+}
+.hdp-nav:hover { background: var(--hdp-primary-soft); }
+/* the « » year-jump buttons sit just outside the ‹ › month nav (slimmer) */
+.hdp-nav-year { width: 26px; font-size: 15px; color: var(--hdp-muted); }
+.hdp-nav-year:hover { color: var(--hdp-text); }
+.hdp-title {
+  display: flex; gap: 4px; flex: 1 1 auto; min-width: 0;
+  justify-content: center; align-items: center;
+}
+.hdp-title-text { font-weight: 600; white-space: nowrap; }
+.hdp-pill {
+  background: var(--hdp-bg); color: var(--hdp-text); border: 1px solid var(--hdp-border);
+  border-radius: var(--hdp-radius-sm); padding: 5px 9px; cursor: pointer; font: inherit; font-weight: 600;
+  white-space: nowrap; /* keep long month names (e.g. אדר א׳) on one line */
+  flex: 0 1 auto; min-width: 0;
+}
+.hdp-pill:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
+
+.hdp-sub { font-size: 11px; color: var(--hdp-muted); text-align: center; padding: 2px 0 6px; flex: 0 0 auto; min-height: 22px; }
+
+/* Weekday header + day grid */
+.hdp-weekdays {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; direction: inherit; flex: 0 0 auto;
+}
+.hdp-wd { text-align: center; font-size: 12px; font-weight: 600; color: var(--hdp-muted); padding: 4px 0; }
+.hdp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: var(--hdp-row-h); /* fixed row height: 5 rows normally, 6 when the month overflows */
+  gap: 3px;
+  direction: inherit; /* follows the panel: RTL for Hebrew, LTR for English */
+  padding-top: 2px;
+  min-height: calc(var(--hdp-row-h) * 5);
+  flex: 0 0 auto;
+}
+.hdp-cell {
+  position: relative; background: var(--hdp-cell-bg); border: 1px solid transparent;
+  border-radius: var(--hdp-radius-sm); padding: 2px; cursor: pointer; display: flex;
+  flex-direction: column; align-items: center; justify-content: center; font: inherit; color: inherit;
+}
+.hdp-cell:hover:not(.is-blank):not(.is-disabled) {
+  background: var(--hdp-primary-soft); border-color: var(--hdp-primary);
+}
+/* keep hovered (non-selected) text dark & readable on the light hover tint,
+   even on holiday cells whose number is normally tinted */
+.hdp-cell:hover:not(.is-blank):not(.is-disabled):not(.is-selected):not(.is-range-start):not(.is-range-end),
+.hdp-cell:hover:not(.is-blank):not(.is-disabled):not(.is-selected):not(.is-range-start):not(.is-range-end) .hdp-gem,
+.hdp-cell:hover:not(.is-blank):not(.is-disabled):not(.is-selected):not(.is-range-start):not(.is-range-end) .hdp-num,
+.hdp-cell:hover:not(.is-blank):not(.is-disabled):not(.is-selected):not(.is-range-start):not(.is-range-end) .hdp-gem-sm {
+  color: var(--hdp-text);
+}
+/* Hovering a selected / range-endpoint cell keeps its solid bg so white text stays readable */
+.hdp-cell.is-selected:hover,
+.hdp-cell.is-range-start:hover,
+.hdp-cell.is-range-end:hover { background: var(--hdp-primary); color: #fff; }
+.hdp-cell.is-selected:hover .hdp-gem, .hdp-cell.is-selected:hover .hdp-num,
+.hdp-cell.is-selected:hover .hdp-gem-sm,
+.hdp-cell.is-range-start:hover .hdp-gem, .hdp-cell.is-range-end:hover .hdp-gem { color: #fff; }
+.hdp-cell.is-blank { background: transparent; cursor: default; }
+.hdp-cell.is-today { border-color: var(--hdp-today); }
+.hdp-cell.is-selected { background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary); }
+.hdp-cell.is-selected .hdp-num, .hdp-cell.is-selected .hdp-gem-sm { color: rgba(255, 255, 255, 0.75); }
+.hdp-cell.is-disabled { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
+/* days that belong to the previous / next month (outsideDays) — greyed, still selectable */
+.hdp-cell.is-outside { background: transparent; }
+.hdp-cell.is-outside .hdp-gem,
+.hdp-cell.is-outside .hdp-num,
+.hdp-cell.is-outside .hdp-gem-sm { color: var(--hdp-muted); opacity: 0.55; }
+.hdp-cell.is-outside:hover:not(.is-disabled) { background: var(--hdp-primary-soft); opacity: 1; }
+.hdp-cell.is-outside:hover .hdp-gem,
+.hdp-cell.is-outside:hover .hdp-num,
+.hdp-cell.is-outside:hover .hdp-gem-sm { opacity: 0.9; }
+
+/* range selection highlighting (both calendars) */
+.hdp-cell.is-in-range { background: var(--hdp-primary-soft); border-radius: 0; }
+.hdp-cell.is-range-start, .hdp-cell.is-range-end {
+  background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary);
+}
+.hdp-cell.is-range-start .hdp-num, .hdp-cell.is-range-end .hdp-num,
+.hdp-cell.is-range-start .hdp-gem-sm, .hdp-cell.is-range-end .hdp-gem-sm { color: rgba(255, 255, 255, 0.75); }
+/* logical radii so the rounded ends follow the text direction (RTL & LTR) */
+.hdp-cell.is-range-start:not(.is-range-single) {
+  border-start-start-radius: var(--hdp-radius-sm); border-end-start-radius: var(--hdp-radius-sm);
+  border-start-end-radius: 0; border-end-end-radius: 0;
+}
+.hdp-cell.is-range-end:not(.is-range-single) {
+  border-start-end-radius: var(--hdp-radius-sm); border-end-end-radius: var(--hdp-radius-sm);
+  border-start-start-radius: 0; border-end-start-radius: 0;
+}
+.hdp-cell.is-range-single { border-radius: var(--hdp-radius-sm); }
+
+.hdp-cell.hdp-shabbat:not(.is-selected) { background: var(--hdp-shabbat-bg); }
+.hdp-cell.hdp-holiday:not(.is-selected) .hdp-gem,
+.hdp-cell.hdp-holiday:not(.is-selected) .hdp-num { color: var(--hdp-holiday); }
+
+.hdp-gem { font-size: 13px; font-weight: 600; line-height: 1.1; }
+.hdp-num { font-size: 10px; color: var(--hdp-muted); line-height: 1; }
+.hdp-gem-sm { font-size: 9px; color: var(--hdp-muted); line-height: 1; margin-top: 1px; }
+/* In the Gregorian view the civil number (.hdp-num) is the PRIMARY figure, so
+   make it large & in the main text color (the small Hebrew gematria sits below). */
+.hdp-cal-greg .hdp-num { font-size: 16px; font-weight: 600; color: var(--hdp-text); }
+.hdp-cal-greg.is-selected .hdp-num, .hdp-cal-greg .hdp-cell.is-selected .hdp-num { color: #fff; }
+
+/* event dot marker */
+.hdp-dot {
+  position: absolute; top: 3px; inline-size: 5px; block-size: 5px;
+  inset-inline-start: 3px; border-radius: 50%; background: var(--hdp-holiday);
+}
+.hdp-evt-yomtov .hdp-dot { background: #dc2626; }
+.hdp-evt-chanukah .hdp-dot { background: #f59e0b; }
+.hdp-evt-fast .hdp-dot { background: #6b7280; }
+.hdp-evt-roshchodesh .hdp-dot { background: #2563eb; }
+
+/* months / years sub-grid — sized to match a 5-row day view (incl. the day
+   view's subtitle + weekday header) so the popup never jumps between views. */
+.hdp-mygrid {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 6px;
+  padding-top: 4px;
+  direction: inherit;
+  flex: 0 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: calc(var(--hdp-row-h) * 5 + var(--hdp-head-extra));
+}
+.hdp-mycell { min-width: 0; } /* let cells shrink so the grid never overflows the frame */
+.hdp-mygrid-m { grid-template-columns: repeat(3, 1fr); } /* months: 3 across */
+.hdp-mygrid-y { grid-template-columns: repeat(4, 1fr); } /* years: 4 across (20-year block) */
+.hdp-mycell {
+  background: var(--hdp-cell-bg); border: 1px solid transparent; border-radius: var(--hdp-radius-sm);
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  font: inherit; font-size: 15px; color: inherit;
+}
+.hdp-mycell:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
+.hdp-mycell.is-selected { background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary); }
+.hdp-yearnav { display: flex; align-items: center; gap: 8px; padding: 4px; }
+
+/* styled holiday/parasha tooltip (replaces the native title popup) */
+.hdp-tip {
+  position: fixed; z-index: 10000;
+  background: #1f2937; color: #ffffff;
+  padding: 7px 10px; border-radius: 8px; font-size: 12.5px; line-height: 1.5;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  pointer-events: none; opacity: 0; transform: translateY(3px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  max-width: 220px; direction: rtl; text-align: right;
+}
+.hdp-tip.is-visible { opacity: 1; transform: none; }
+.hdp-tip-row { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.hdp-tip-dot { inline-size: 7px; block-size: 7px; border-radius: 50%; background: #9ca3af; flex: 0 0 auto; }
+.hdp-tip-shabbat .hdp-tip-dot { background: var(--hdp-today); }
+.hdp-tip-yomtov .hdp-tip-dot { background: #f87171; }
+.hdp-tip-cholhamoed .hdp-tip-dot { background: #fbbf24; }
+.hdp-tip-chanukah .hdp-tip-dot { background: #f59e0b; }
+.hdp-tip-fast .hdp-tip-dot { background: #9ca3af; }
+.hdp-tip-minor .hdp-tip-dot { background: #c084fc; }
+.hdp-tip-roshchodesh .hdp-tip-dot { background: #60a5fa; }
+
+/* time picker (normal = dropdowns) */
+.hdp-time {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--hdp-border); direction: ltr;
+}
+.hdp-time-colon { font-weight: 700; color: var(--hdp-muted); }
+.hdp-time-sel {
+  font: inherit; font-size: 14px; padding: 5px 6px; border: 1px solid var(--hdp-border);
+  border-radius: var(--hdp-radius-sm); background: var(--hdp-bg); color: var(--hdp-text); cursor: pointer;
+}
+.hdp-time-sel:focus { outline: none; border-color: var(--hdp-primary); }
+
+/* time picker — native (device) input */
+.hdp-time-native { gap: 0; }
+.hdp-time-input {
+  font: inherit; font-size: 15px; padding: 6px 8px; border: 1px solid var(--hdp-border);
+  border-radius: var(--hdp-radius-sm); background: var(--hdp-bg); color: var(--hdp-text);
+}
+.hdp-time-input:focus { outline: none; border-color: var(--hdp-primary); }
+
+/* time picker — steppers (▲ value ▼) */
+/* stepper wrap stays a row (hour : minute side by side) */
+.hdp-time.hdp-time-stepper { flex-direction: row; align-items: center; gap: 10px; }
+.hdp-time-spin { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+/* (renamed) individual spinner buttons */
+.hdp-time-step {
+  font: inherit; font-size: 12px; line-height: 1; width: 38px; padding: 6px 0;
+  border: 1px solid var(--hdp-border); border-radius: var(--hdp-radius-sm);
+  background: var(--hdp-bg); color: var(--hdp-text); cursor: pointer;
+}
+.hdp-time-step:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
+.hdp-time-step:active { background: var(--hdp-primary); color: #fff; }
+.hdp-time-val {
+  font: inherit; font-size: 20px; font-weight: 700; width: 38px; text-align: center;
+  border: 1px solid transparent; border-radius: var(--hdp-radius-sm); background: var(--hdp-cell-bg);
+  color: var(--hdp-text); padding: 4px 0; font-variant-numeric: tabular-nums;
+}
+.hdp-time-val:focus { outline: none; border-color: var(--hdp-primary); }
+.hdp-time-ampm {
+  font: inherit; font-weight: 600; padding: 5px 10px; border: 1px solid var(--hdp-border);
+  border-radius: var(--hdp-radius-sm); background: var(--hdp-bg); color: var(--hdp-text); cursor: pointer;
+}
+.hdp-time-ampm:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
+
+/* analog clock time picker (mobile style) */
+.hdp-clock {
+  margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--hdp-border);
+  display: flex; flex-direction: column; align-items: center; gap: 8px; direction: ltr;
+}
+.hdp-clock-head { display: flex; align-items: center; gap: 6px; }
+.hdp-clock-digit {
+  font: inherit; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums;
+  line-height: 1; padding: 4px 8px; border: none; border-radius: var(--hdp-radius-sm);
+  background: var(--hdp-cell-bg); color: var(--hdp-muted); cursor: pointer;
+}
+.hdp-clock-digit.is-active { background: var(--hdp-primary-soft); color: var(--hdp-primary); }
+.hdp-clock-colon { font-size: 24px; font-weight: 700; color: var(--hdp-muted); }
+.hdp-clock-ampm { display: inline-flex; flex-direction: column; gap: 2px; margin-inline-start: 6px; }
+.hdp-clock-ap {
+  font: inherit; font-size: 12px; font-weight: 700; padding: 3px 8px;
+  border: 1px solid var(--hdp-border); border-radius: var(--hdp-radius-sm);
+  background: var(--hdp-bg); color: var(--hdp-muted); cursor: pointer;
+}
+.hdp-clock-ap.is-active { background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary); }
+.hdp-clock-dial { display: block; touch-action: manipulation; }
+.hdp-clock-face { fill: var(--hdp-cell-bg); stroke: var(--hdp-border); stroke-width: 1; }
+.hdp-clock-center { fill: var(--hdp-primary); }
+.hdp-clock-hand { stroke: var(--hdp-primary); stroke-width: 2; }
+.hdp-clock-num { cursor: pointer; }
+.hdp-clock-numbg { fill: transparent; }
+.hdp-clock-num:hover .hdp-clock-numbg { fill: var(--hdp-primary-soft); }
+.hdp-clock-num.is-active .hdp-clock-numbg { fill: var(--hdp-primary); }
+/* the selector dot at the EXACT picked minute/second (visible even off the 5-marks) */
+.hdp-clock-sel { fill: var(--hdp-primary); }
+.hdp-clock-txt { fill: var(--hdp-text); font-size: 13px; font-family: inherit; user-select: none; }
+.hdp-clock-num.is-active .hdp-clock-txt { fill: #fff; }
+/* fine ±1 / type-in control for exact minutes / seconds */
+.hdp-clock-fine { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.hdp-clock-fine-btn {
+  font: inherit; font-size: 16px; line-height: 1; width: 28px; height: 28px;
+  border: 1px solid var(--hdp-border); border-radius: var(--hdp-radius-sm);
+  background: var(--hdp-bg); color: var(--hdp-text); cursor: pointer;
+}
+.hdp-clock-fine-btn:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
+.hdp-clock-fine-val {
+  font: inherit; font-size: 16px; font-weight: 700; width: 42px; text-align: center;
+  border: 1px solid var(--hdp-border); border-radius: var(--hdp-radius-sm);
+  background: var(--hdp-cell-bg); color: var(--hdp-text); padding: 4px 0; font-variant-numeric: tabular-nums;
+}
+.hdp-clock-fine-val:focus { outline: none; border-color: var(--hdp-primary); }
+.hdp-clock-fine-label { font-size: 12px; color: var(--hdp-muted); }
+
+/* preview */
+.hdp-preview {
+  margin-top: 8px; padding: 8px 10px; background: var(--hdp-primary-soft);
+  border-radius: var(--hdp-radius-sm); font-size: 13px; text-align: center; font-weight: 500; flex: 0 0 auto;
+}
+
+/* actions */
+.hdp-actions {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+  border-top: 1px solid var(--hdp-border); background: #fafbfd;
+  border-radius: 0 0 var(--hdp-radius) var(--hdp-radius);
+}
+.hdp-btn {
+  padding: 7px 14px; border-radius: var(--hdp-radius-sm); border: 1px solid var(--hdp-border);
+  background: var(--hdp-bg); cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; color: var(--hdp-text);
+}
+.hdp-btn-ghost { background: transparent; border-color: transparent; color: var(--hdp-muted); }
+.hdp-btn-ghost:hover { background: var(--hdp-primary-soft); color: var(--hdp-text); }
+.hdp-btn-primary { background: var(--hdp-primary); border-color: var(--hdp-primary); color: #fff; }
+.hdp-btn-primary:hover { filter: brightness(1.05); }
+.hdp-range-hint { font-size: 12px; color: var(--hdp-muted); font-variant-numeric: tabular-nums; }
+
+/* ----- size variants: change only the per-row height (everything follows) ----- */
+.hdp.hdp-size-sm { --hdp-row-h: 34px; --hdp-head-extra: 44px; font-size: 12px; }
+.hdp.hdp-size-sm .hdp-col { width: 210px; }
+.hdp.hdp-size-sm .hdp-mycell { font-size: 12.5px; }
+.hdp.hdp-size-sm .hdp-gem { font-size: 11px; }
+.hdp.hdp-size-sm .hdp-cal-hebrew .hdp-num { font-size: 8px; }   /* secondary civil number */
+.hdp.hdp-size-sm .hdp-cal-greg .hdp-num { font-size: 13px; }    /* primary civil number */
+.hdp.hdp-size-sm .hdp-gem-sm { font-size: 8px; }
+/* smaller header controls so nothing overflows the narrow sm frame */
+.hdp.hdp-size-sm .hdp-nav { width: 26px; height: 26px; font-size: 15px; }
+.hdp.hdp-size-sm .hdp-nav-year { width: 22px; font-size: 13px; }
+.hdp.hdp-size-sm .hdp-pill { padding: 4px 8px; }
+.hdp.hdp-size-sm .hdp-head { gap: 4px; }
+.hdp.hdp-size-md { --hdp-row-h: 50px; }
+.hdp.hdp-size-lg { --hdp-row-h: 60px; }
+.hdp.hdp-size-lg .hdp-col { width: 290px; }
+.hdp.hdp-size-lg .hdp-mycell { font-size: 17px; }
+.hdp.hdp-compact { --hdp-row-h: 42px; --hdp-head-extra: 28px; }
+.hdp.hdp-compact .hdp-mycell { font-size: 14px; }
+
+/* ----- rounded (circular) day cells ----- */
+/* A true circle: the cell is a square sized to the SMALLER of its column width
+   and the row height, centred in the cell. Tight gaps (circles don't need air). */
+.hdp.hdp-rounded .hdp-grid { gap: 1px; }
+.hdp.hdp-rounded .hdp-cell {
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: var(--hdp-row-h);
+  height: auto;
+  margin: auto;
+  align-self: center;
+  justify-self: center;
+}
+/* range endpoints / in-range are the SAME circles as ordinary days (no big pill) */
+.hdp.hdp-rounded .hdp-cell.is-in-range,
+.hdp.hdp-rounded .hdp-cell.is-range-start,
+.hdp.hdp-rounded .hdp-cell.is-range-end,
+.hdp.hdp-rounded .hdp-cell.is-range-single { border-radius: 50%; }
+/* the holiday dot stays in the corner (outside the inscribed circle is fine) */
+.hdp.hdp-rounded .hdp-dot { top: 0; inset-inline-start: 0; }
+
+/* =====================================================================
+   CLEAN SKIN (.hdp-clean) — a minimal, Filament-style look:
+   borderless cells, circular day highlights, grey-scale chrome, primary
+   accent. Colours come from the --hdp-* variables (which the Filament
+   theme maps to Filament's own design tokens). Used by the Filament field;
+   opt into it on the standalone package with `clean: true`.
+   ===================================================================== */
+/* chrome: borderless nav + pills, hover = subtle grey */
+.hdp.hdp-clean .hdp-nav,
+.hdp.hdp-clean .hdp-pill {
+  background: transparent; border-color: transparent;
+}
+.hdp.hdp-clean .hdp-nav:hover,
+.hdp.hdp-clean .hdp-pill:hover {
+  background: color-mix(in srgb, var(--hdp-muted) 14%, transparent); border-color: transparent;
+}
+.hdp.hdp-clean .hdp-actions { background: transparent; }
+.hdp.hdp-clean .hdp-sub,
+.hdp.hdp-clean .hdp-preview { background: transparent; color: var(--hdp-muted); font-weight: 500; }
+.hdp.hdp-clean .hdp-preview { padding: 6px 4px 2px; font-size: 12px; }
+
+/* days: no cell fill / border; circular highlights (like the reference) */
+.hdp.hdp-clean .hdp-grid { gap: 2px; }
+.hdp.hdp-clean .hdp-cell {
+  background: transparent; border: none;
+  aspect-ratio: 1 / 1; width: 100%; max-width: var(--hdp-row-h);
+  height: auto; margin: auto; align-self: center; justify-self: center;
+  border-radius: 50%;
+}
+.hdp.hdp-clean .hdp-cell:hover:not(.is-blank):not(.is-disabled):not(.is-selected) {
+  background: color-mix(in srgb, var(--hdp-muted) 14%, transparent); border: none;
+}
+.hdp.hdp-clean .hdp-cell.is-today:not(.is-selected) {
+  border: 2px solid var(--hdp-primary); background: transparent;
+}
+.hdp.hdp-clean .hdp-cell.is-selected {
+  background: var(--hdp-primary); color: #fff; border-radius: 50%;
+}
+/* holiday = soft primary disc, number stays in the normal text colour */
+.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) {
+  background: var(--hdp-primary-soft);
+}
+.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) .hdp-gem,
+.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) .hdp-num,
+.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) .hdp-gem-sm { color: inherit; }
+/* shabbat tint is dropped in the clean skin (kept minimal) */
+.hdp.hdp-clean .hdp-cell.hdp-shabbat:not(.is-selected):not(.hdp-holiday) { background: transparent; }
+/* range: square in-range band, circular endpoints */
+.hdp.hdp-clean .hdp-cell.is-in-range,
+.hdp.hdp-clean .hdp-cell.is-range-start,
+.hdp.hdp-clean .hdp-cell.is-range-end { aspect-ratio: auto; align-self: stretch; }
+.hdp.hdp-clean .hdp-cell.is-in-range { background: var(--hdp-primary-soft); border-radius: 0; }
+.hdp.hdp-clean .hdp-cell.is-range-start,
+.hdp.hdp-clean .hdp-cell.is-range-end { background: var(--hdp-primary); color: #fff; border-radius: 50%; }
+.hdp.hdp-clean .hdp-cell.is-range-single { border-radius: 50%; }
+
+/* months / years: borderless tiles, grey hover, primary selected */
+.hdp.hdp-clean .hdp-mycell {
+  background: transparent; border: 1px solid transparent; border-radius: var(--hdp-radius-sm);
+}
+.hdp.hdp-clean .hdp-mycell:hover {
+  background: color-mix(in srgb, var(--hdp-muted) 14%, transparent); border-color: transparent;
+}
+.hdp.hdp-clean .hdp-mycell.is-selected {
+  background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary);
+}
+
+/* ----- compact / minimal layout: hide secondary info ----- */
+.hdp.hdp-compact .hdp-sub,
+.hdp.hdp-compact .hdp-preview,
+.hdp.hdp-compact .hdp-dot { display: none; }
+/* compact day view hides the subtitle, so reserve less in months/years */
+.hdp.hdp-compact .hdp-sub { min-height: 0; }
+.hdp.hdp-compact .hdp-cal-hebrew .hdp-num { display: none; }
+.hdp.hdp-compact .hdp-cal-greg .hdp-gem-sm { display: none; }
+
+/* Dark theme. Opt in with class `hdp-dark`, or override the variables yourself.
+   Every surface reads from the --hdp-* tokens, so overriding them is enough. */
+.hdp.hdp-dark {
+  --hdp-bg: #1b2130;
+  --hdp-text: #e8eaf0;
+  --hdp-muted: #9aa4b8;
+  --hdp-border: #333c4f;
+  --hdp-cell-bg: #262d3c;
+  --hdp-primary-soft: rgba(124, 137, 255, 0.20);
+  --hdp-shabbat-bg: #3a3320;
+  --hdp-holiday: #e879f9;
+  --hdp-today: #fbbf24;
+  --hdp-shadow: 0 14px 38px rgba(0, 0, 0, 0.55);
+}
+.hdp.hdp-dark .hdp-actions { background: #151a26; }
+.hdp.hdp-dark .hdp-btn-ghost:hover { color: var(--hdp-text); }
+
+/* Automatic dark mode: opt in with `hdp-theme-auto` to follow the OS/browser
+   preference without having to toggle the class yourself. */
+@media (prefers-color-scheme: dark) {
+  .hdp.hdp-theme-auto {
+    --hdp-bg: #1b2130;
+    --hdp-text: #e8eaf0;
+    --hdp-muted: #9aa4b8;
+    --hdp-border: #333c4f;
+    --hdp-cell-bg: #262d3c;
+    --hdp-primary-soft: rgba(124, 137, 255, 0.20);
+    --hdp-shabbat-bg: #3a3320;
+    --hdp-holiday: #e879f9;
+    --hdp-today: #fbbf24;
+    --hdp-shadow: 0 14px 38px rgba(0, 0, 0, 0.55);
+  }
+  .hdp.hdp-theme-auto .hdp-actions { background: #151a26; }
+}
+
+/* input field used by the framework wrappers (popup mode) */
+.hdp-input {
+  font: inherit; padding: 9px 12px; border: 1px solid var(--hdp-border);
+  border-radius: var(--hdp-radius-sm); background: var(--hdp-bg); color: var(--hdp-text); width: 100%;
+}

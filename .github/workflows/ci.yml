@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    name: test (node ${{ matrix.node }}, TZ ${{ matrix.tz }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+        # Run across timezones with DST so calendar math can't regress.
+        tz: ['UTC', 'Asia/Jerusalem', 'America/New_York', 'Pacific/Auckland']
+    env:
+      TZ: ${{ matrix.tz }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - name: Type-check
+        run: npm run typecheck
+      - name: Unit tests (TZ=${{ matrix.tz }})
+        run: npm test
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: Build bundles
+        run: npm run build
+      - name: Verify dist output exists
+        run: |
+          test -f dist/core/index.js
+          test -f dist/core/index.cjs
+          test -f dist/core/index.d.ts
+          test -f dist/vue/index.js
+          test -f dist/react/index.js
+          test -f dist/angular/index.js
+          test -f dist/webcomponent/index.js
+          test -f dist/hebrew-datepicker.css
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist

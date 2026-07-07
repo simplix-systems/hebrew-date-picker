@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "outDir": "lib-cjs",
+    "rootDir": "src"
+  },
+  "include": ["src/core"],
+  "exclude": ["node_modules", "dist", "tests", "src/vue", "src/react", "src/angular", "src/svelte", "src/shared"]
+}

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2019", "module": "commonjs", "moduleResolution": "node",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"], "strict": true,
+    "noUnusedLocals": true, "noUnusedParameters": true, "esModuleInterop": true,
+    "skipLibCheck": true, "types": [], "outDir": "lib-cjs", "rootDir": "src", "declaration": false
+  },
+  "include": ["src/core"]
+}
