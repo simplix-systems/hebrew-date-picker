@@ -103,10 +103,12 @@ if (JSDOM) {
   });
 
   test('range hover preview highlights the prospective range', () => {
-    const { host } = mount({ mode: 'range', calendar: 'gregorian', value: { start: '2026-06-20', end: '' } });
+    // Seed a single start (mid-pick: a start, no end) on a fixed month, so the
+    // calendar is deterministic and hovering shows the prospective range.
+    // (Clicking a day here would set the END and complete the range instead.)
+    const { host } = mount({ mode: 'range', calendar: 'gregorian', value: { start: '2026-06-10', end: '' } });
     const grid0 = host.querySelectorAll('.hdp-col')[0];
     const cellOf = (iso) => [...grid0.querySelectorAll('.hdp-cell')].find((c) => c.dataset.iso === iso);
-    cellOf('2026-06-10').click(); // picks day 10 as the (only) start
     cellOf('2026-06-15').dispatchEvent(new window.MouseEvent('mouseenter', { bubbles: true }));
     assert.ok(cellOf('2026-06-12').classList.contains('is-in-range'), 'day 12 should preview as in-range');
     assert.ok(cellOf('2026-06-15').classList.contains('is-range-end'), 'hovered day should be the range end');
