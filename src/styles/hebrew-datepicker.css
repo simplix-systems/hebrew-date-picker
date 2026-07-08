@@ -9,6 +9,10 @@
   --hdp-border: #e5e7eb;
   --hdp-primary: #4c5fd8;
   --hdp-primary-soft: rgba(76, 95, 216, 0.12);
+  /* Text drawn ON the primary color (selected day, confirm button, …). Set to
+     black or white per the primary's luminance (YIQ) — the picker recomputes it
+     at runtime when a custom primaryColor is given, so light accents stay readable. */
+  --hdp-on-primary: #ffffff;
   --hdp-today: #f59e0b;
   --hdp-shabbat-bg: #fef3c7;
   --hdp-holiday: #c026d3;
@@ -134,14 +138,14 @@
 /* Hovering a selected / range-endpoint cell keeps its solid bg so white text stays readable */
 .hdp-cell.is-selected:hover,
 .hdp-cell.is-range-start:hover,
-.hdp-cell.is-range-end:hover { background: var(--hdp-primary); color: #fff; }
+.hdp-cell.is-range-end:hover { background: var(--hdp-primary); color: var(--hdp-on-primary); }
 .hdp-cell.is-selected:hover .hdp-gem, .hdp-cell.is-selected:hover .hdp-num,
 .hdp-cell.is-selected:hover .hdp-gem-sm,
-.hdp-cell.is-range-start:hover .hdp-gem, .hdp-cell.is-range-end:hover .hdp-gem { color: #fff; }
+.hdp-cell.is-range-start:hover .hdp-gem, .hdp-cell.is-range-end:hover .hdp-gem { color: var(--hdp-on-primary); }
 .hdp-cell.is-blank { background: transparent; cursor: default; }
 .hdp-cell.is-today { border-color: var(--hdp-today); }
-.hdp-cell.is-selected { background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary); }
-.hdp-cell.is-selected .hdp-num, .hdp-cell.is-selected .hdp-gem-sm { color: rgba(255, 255, 255, 0.75); }
+.hdp-cell.is-selected { background: var(--hdp-primary); color: var(--hdp-on-primary); border-color: var(--hdp-primary); }
+.hdp-cell.is-selected .hdp-num, .hdp-cell.is-selected .hdp-gem-sm { color: color-mix(in srgb, var(--hdp-on-primary) 75%, transparent); }
 .hdp-cell.is-disabled { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
 /* days that belong to the previous / next month (outsideDays) — greyed, still selectable */
 .hdp-cell.is-outside { background: transparent; }
@@ -156,10 +160,10 @@
 /* range selection highlighting (both calendars) */
 .hdp-cell.is-in-range { background: var(--hdp-primary-soft); border-radius: 0; }
 .hdp-cell.is-range-start, .hdp-cell.is-range-end {
-  background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary);
+  background: var(--hdp-primary); color: var(--hdp-on-primary); border-color: var(--hdp-primary);
 }
 .hdp-cell.is-range-start .hdp-num, .hdp-cell.is-range-end .hdp-num,
-.hdp-cell.is-range-start .hdp-gem-sm, .hdp-cell.is-range-end .hdp-gem-sm { color: rgba(255, 255, 255, 0.75); }
+.hdp-cell.is-range-start .hdp-gem-sm, .hdp-cell.is-range-end .hdp-gem-sm { color: color-mix(in srgb, var(--hdp-on-primary) 75%, transparent); }
 /* logical radii so the rounded ends follow the text direction (RTL & LTR) */
 .hdp-cell.is-range-start:not(.is-range-single) {
   border-start-start-radius: var(--hdp-radius-sm); border-end-start-radius: var(--hdp-radius-sm);
@@ -181,7 +185,7 @@
 /* In the Gregorian view the civil number (.hdp-num) is the PRIMARY figure, so
    make it large & in the main text color (the small Hebrew gematria sits below). */
 .hdp-cal-greg .hdp-num { font-size: 16px; font-weight: 600; color: var(--hdp-text); }
-.hdp-cal-greg.is-selected .hdp-num, .hdp-cal-greg .hdp-cell.is-selected .hdp-num { color: #fff; }
+.hdp-cal-greg.is-selected .hdp-num, .hdp-cal-greg .hdp-cell.is-selected .hdp-num { color: var(--hdp-on-primary); }
 
 /* event dot marker */
 .hdp-dot {
@@ -215,7 +219,7 @@
   font: inherit; font-size: 15px; color: inherit;
 }
 .hdp-mycell:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
-.hdp-mycell.is-selected { background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary); }
+.hdp-mycell.is-selected { background: var(--hdp-primary); color: var(--hdp-on-primary); border-color: var(--hdp-primary); }
 .hdp-yearnav { display: flex; align-items: center; gap: 8px; padding: 4px; }
 
 /* styled holiday/parasha tooltip (replaces the native title popup) */
@@ -270,7 +274,7 @@
   background: var(--hdp-bg); color: var(--hdp-text); cursor: pointer;
 }
 .hdp-time-step:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
-.hdp-time-step:active { background: var(--hdp-primary); color: #fff; }
+.hdp-time-step:active { background: var(--hdp-primary); color: var(--hdp-on-primary); }
 .hdp-time-val {
   font: inherit; font-size: 20px; font-weight: 700; width: 38px; text-align: center;
   border: 1px solid transparent; border-radius: var(--hdp-radius-sm); background: var(--hdp-cell-bg);
@@ -302,7 +306,7 @@
   border: 1px solid var(--hdp-border); border-radius: var(--hdp-radius-sm);
   background: var(--hdp-bg); color: var(--hdp-muted); cursor: pointer;
 }
-.hdp-clock-ap.is-active { background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary); }
+.hdp-clock-ap.is-active { background: var(--hdp-primary); color: var(--hdp-on-primary); border-color: var(--hdp-primary); }
 .hdp-clock-dial { display: block; touch-action: manipulation; }
 .hdp-clock-face { fill: var(--hdp-cell-bg); stroke: var(--hdp-border); stroke-width: 1; }
 .hdp-clock-center { fill: var(--hdp-primary); }
@@ -314,7 +318,7 @@
 /* the selector dot at the EXACT picked minute/second (visible even off the 5-marks) */
 .hdp-clock-sel { fill: var(--hdp-primary); }
 .hdp-clock-txt { fill: var(--hdp-text); font-size: 13px; font-family: inherit; user-select: none; }
-.hdp-clock-num.is-active .hdp-clock-txt { fill: #fff; }
+.hdp-clock-num.is-active .hdp-clock-txt { fill: var(--hdp-on-primary); }
 /* fine ±1 / type-in control for exact minutes / seconds */
 .hdp-clock-fine { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
 .hdp-clock-fine-btn {
@@ -349,7 +353,7 @@
 }
 .hdp-btn-ghost { background: transparent; border-color: transparent; color: var(--hdp-muted); }
 .hdp-btn-ghost:hover { background: var(--hdp-primary-soft); color: var(--hdp-text); }
-.hdp-btn-primary { background: var(--hdp-primary); border-color: var(--hdp-primary); color: #fff; }
+.hdp-btn-primary { background: var(--hdp-primary); border-color: var(--hdp-primary); color: var(--hdp-on-primary); }
 .hdp-btn-primary:hover { filter: brightness(1.05); }
 .hdp-range-hint { font-size: 12px; color: var(--hdp-muted); font-variant-numeric: tabular-nums; }
 

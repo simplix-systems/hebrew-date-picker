@@ -49,6 +49,29 @@ interface Resolved {
   onClose?: () => void;
 }
 
+/**
+ * Choose black or white text to sit ON a background color, by its YIQ
+ * luminance (per the classic contrast heuristic). Resolves any CSS color
+ * (hex / rgb / named) via a throwaway element; falls back to white.
+ */
+function onPrimaryColor(color: string): string {
+  try {
+    if (typeof document === 'undefined') return '#ffffff';
+    const probe = document.createElement('span');
+    probe.style.color = color;
+    document.body.appendChild(probe);
+    const rgb = getComputedStyle(probe).color;
+    probe.remove();
+    const m = rgb.match(/\d+(\.\d+)?/g);
+    if (!m || m.length < 3) return '#ffffff';
+    const [r, g, b] = m.map(Number);
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 150 ? '#111827' : '#ffffff';
+  } catch {
+    return '#ffffff';
+  }
+}
+
 export class DatePicker {
   private opt: Resolved;
   private panel!: HTMLElement;
@@ -278,6 +301,9 @@ export class DatePicker {
         '--hdp-primary-soft',
         `color-mix(in srgb, ${this.opt.primaryColor} 14%, transparent)`
       );
+      // Pick black/white for text drawn ON the accent, by its YIQ luminance, so a
+      // light custom primaryColor keeps the selected-day text readable.
+      this.panel.style.setProperty('--hdp-on-primary', onPrimaryColor(this.opt.primaryColor));
     }
     this.renderPanel();
   }

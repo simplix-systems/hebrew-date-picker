@@ -62,7 +62,7 @@ const globalConfig: GlobalConfig = {
   highlightHolidays: true,
   showParasha: true,
   showTooltips: true,
-  outsideDays: false,
+  outsideDays: true,
   diaspora: false,
   displayCalendar: 'hebrew',
   time: false,

@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🗓️ @simplix-systems/hebrew-date-picker
+# @simplix-systems/hebrew-date-picker
+
+<img src="assets/hero.svg" alt="Hebrew Date Picker — dual Hebrew & Gregorian calendar" width="100%" />
 
 **A beautiful, fully-featured Hebrew & Gregorian date picker.**
 

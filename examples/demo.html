@@ -204,7 +204,7 @@
         <label class="chk"><input type="checkbox" id="highlightHolidays" checked /> <span data-i18n="c_holidays">highlightHolidays</span></label>
         <label class="chk"><input type="checkbox" id="highlightShabbat" checked /> <span data-i18n="c_shabbat">highlightShabbat</span></label>
         <label class="chk"><input type="checkbox" id="showParasha" checked /> <span data-i18n="c_parasha">showParasha</span></label>
-        <label class="chk"><input type="checkbox" id="outsideDays" /> <span data-i18n="c_outside">outsideDays</span></label>
+        <label class="chk"><input type="checkbox" id="outsideDays" checked /> <span data-i18n="c_outside">outsideDays</span></label>
         <label class="chk"><input type="checkbox" id="diaspora" /> <span data-i18n="c_diaspora">diaspora</span></label>
         <label class="chk"><input type="checkbox" id="compact" /> <span data-i18n="c_compact">compact</span></label>
         <label class="chk"><input type="checkbox" id="rounded" /> <span data-i18n="c_rounded">rounded</span></label>
@@ -362,11 +362,16 @@
       if (d.getDate() !== +dd || d.getMonth() !== +mm - 1) return '';
       return toISO(d);
     }
+    // A masked DD/MM/YYYY date (imask-style, but no underscores): auto-insert the
+    // "/" separators and clamp out-of-range day/month as they're typed.
     function maskDigits(text) {
       const dg = text.replace(/\D/g, '').slice(0, 8);
-      let s = dg.slice(0, 2);
-      if (dg.length >= 3) s += '/' + dg.slice(2, 4);
-      if (dg.length >= 5) s += '/' + dg.slice(4, 8);
+      let day = dg.slice(0, 2), mon = dg.slice(2, 4), yr = dg.slice(4, 8);
+      if (day.length === 2) day = String(Math.min(31, Math.max(1, +day))).padStart(2, '0');
+      if (mon.length === 2) mon = String(Math.min(12, Math.max(1, +mon))).padStart(2, '0');
+      let s = day;
+      if (dg.length >= 2) s += '/' + mon;   // first "/" once the day is complete
+      if (dg.length >= 4) s += '/' + yr;    // second "/" once the month is complete
       return s;
     }
 
@@ -504,7 +509,7 @@
     const DEF = {
       calendar: 'hebrew', mode: 'single', precision: 'day', size: 'md',
       highlightHolidays: true, highlightShabbat: true, showParasha: true,
-      outsideDays: false, diaspora: false, compact: false, rounded: false,
+      outsideDays: true, diaspora: false, compact: false, rounded: false,
       headerBorder: true, time: false, seconds: false, timeFormat: '24',
       timeStyle: 'native', displayCalendar: 'hebrew', closeOnSelect: true,
       lang: 'he', theme: 'light'

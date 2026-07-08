@@ -1,6 +1,8 @@
 <div align="center" dir="rtl">
 
-# 🗓️ @simplix-systems/hebrew-date-picker
+# @simplix-systems/hebrew-date-picker
+
+<img src="assets/hero.svg" alt="בורר תאריך עברי" width="100%" />
 
 **בורר תאריכים עברי ולועזי — יפה, מלא ביכולות.**
 
