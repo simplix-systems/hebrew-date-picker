@@ -348,10 +348,14 @@
       const d = parseISO(iso.split('T')[0]);
       if (!d) return '';
       const heb = opts.displayCalendar === 'hebrew';
+      // When a time picker is on, show the time part too (HH:mm[:ss]).
+      const tPart = opts.time && String(iso).includes('T')
+        ? ' ' + String(iso).split('T')[1].slice(0, opts.seconds ? 8 : 5)
+        : '';
       if (opts.precision === 'year') return heb ? hebYearGematriaFull(gregToHebParts(d).year) : String(d.getFullYear());
       if (opts.precision === 'month') return heb ? hebMonthYearLabel(d) : `${p2(d.getMonth() + 1)}/${d.getFullYear()}`;
-      if (heb) return hebFullString(d);
-      return `${p2(d.getDate())}/${p2(d.getMonth() + 1)}/${d.getFullYear()}`;
+      if (heb) return hebFullString(d) + tPart;
+      return `${p2(d.getDate())}/${p2(d.getMonth() + 1)}/${d.getFullYear()}` + tPart;
     }
     // Parse a typed DD/MM/YYYY (gregorian) -> ISO, or '' if incomplete/invalid.
     function parseTyped(text) {

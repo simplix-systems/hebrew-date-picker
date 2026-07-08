@@ -157,7 +157,19 @@ export class DatePicker {
     this.opt.inline = true;
     this.buildPanel();
     container.appendChild(this.panel);
+    this.applyContrast();
     return this;
+  }
+
+  /**
+   * Set --hdp-on-primary (black/white) from the RESOLVED --hdp-primary, whether
+   * it came from the primaryColor option or a stylesheet/theme (e.g. Filament).
+   * Runs once the panel is in the DOM so the CSS variable is resolvable.
+   */
+  private applyContrast(): void {
+    if (typeof getComputedStyle === 'undefined' || !this.panel) return;
+    const primary = getComputedStyle(this.panel).getPropertyValue('--hdp-primary').trim();
+    if (primary) this.panel.style.setProperty('--hdp-on-primary', onPrimaryColor(primary));
   }
 
   /** Open as a popup anchored to `anchor`. Returns this. */
@@ -166,6 +178,7 @@ export class DatePicker {
     this.opt.inline = false;
     this.buildPanel();
     document.body.appendChild(this.panel);
+    this.applyContrast();
     this.position(anchor);
 
     const reposition = () => this.position(anchor);
@@ -342,7 +355,12 @@ export class DatePicker {
     } else {
       const col = document.createElement('div');
       col.className = 'hdp-col';
-      this.views.push(this.makeView(col, this.startISO, (iso) => {
+      // The calendar renders into its OWN element (it clears that element on
+      // every re-render). The time control is a sibling in the column, so a
+      // day click no longer wipes it out.
+      const grid = document.createElement('div');
+      col.appendChild(grid);
+      this.views.push(this.makeView(grid, this.startISO, (iso) => {
         this.startISO = iso;
         if (!this.opt.time && this.opt.closeOnSelect) this.commitClose();
         else this.emit();

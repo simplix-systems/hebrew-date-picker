@@ -70,48 +70,43 @@
       <text x="192" y="0">ד</text><text x="144" y="0">ה</text><text x="96" y="0">ו</text><text x="48" y="0">ש</text>
     </g>
 
-    <!-- day grid (5 rows). Selected: כ״ג/8. Holiday dots on two cells. -->
-    <g transform="translate(24,134)">
-      <!-- row 1 (outside days greyed) -->
-      <g font-weight="700" text-anchor="middle">
-        <g transform="translate(288,0)"><text x="24" y="24" font-size="14" fill="#c7c9d1">ל׳</text><text x="24" y="38" font-size="10" fill="#c7c9d1">15</text><circle cx="38" cy="8" r="2.6" fill="#c026d3"/></g>
-        <g transform="translate(240,0)"><text x="24" y="24" font-size="14" fill="#111827">א׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">16</text><circle cx="38" cy="8" r="2.6" fill="#c026d3"/></g>
-        <g transform="translate(192,0)"><text x="24" y="24" font-size="14" fill="#111827">ב׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">17</text></g>
-        <g transform="translate(144,0)"><text x="24" y="24" font-size="14" fill="#111827">ג׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">18</text></g>
-        <g transform="translate(96,0)"><text x="24" y="24" font-size="14" fill="#111827">ד׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">19</text></g>
-        <g transform="translate(48,0)"><text x="24" y="24" font-size="14" fill="#111827">ה׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">20</text></g>
-        <g transform="translate(0,0)"><text x="24" y="24" font-size="14" fill="#111827">ו׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">21</text></g>
-        <rect x="312" y="4" width="20" height="20" rx="10" fill="none" stroke="#f59e0b" stroke-width="2"/>
+    <!-- day grid — rounded (circular) cells, like the app's rounded skin.
+         Saturday column tinted (Shabbat), two holiday cells with a dot, and the
+         selected day (כ״ג/8) as a solid accent circle. -->
+    <g transform="translate(24,132)" text-anchor="middle" font-weight="700">
+      <!-- Shabbat column (Saturday = leftmost, x=0): amber tint -->
+      <circle cx="24" cy="18"  r="18" fill="#fef3c7"/><circle cx="24" cy="60"  r="18" fill="#fef3c7"/>
+      <circle cx="24" cy="102" r="18" fill="#fef3c7"/><circle cx="24" cy="144" r="18" fill="#fef3c7"/>
+      <!-- other cells: light discs -->
+      <g fill="#f4f5f8">
+        <circle cx="72" cy="18" r="18"/><circle cx="120" cy="18" r="18"/><circle cx="168" cy="18" r="18"/><circle cx="216" cy="18" r="18"/><circle cx="264" cy="18" r="18"/>
+        <circle cx="72" cy="60" r="18"/><circle cx="168" cy="60" r="18"/><circle cx="216" cy="60" r="18"/><circle cx="264" cy="60" r="18"/>
+        <circle cx="72" cy="102" r="18"/><circle cx="168" cy="102" r="18"/><circle cx="216" cy="102" r="18"/><circle cx="264" cy="102" r="18"/>
+        <circle cx="72" cy="144" r="18"/><circle cx="120" cy="144" r="18"/><circle cx="168" cy="144" r="18"/><circle cx="216" cy="144" r="18"/><circle cx="264" cy="144" r="18"/>
       </g>
-      <!-- row 2 -->
-      <g transform="translate(0,44)" font-weight="700" text-anchor="middle" font-size="14" fill="#111827">
-        <g transform="translate(288,0)"><text x="24" y="24">ז׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">22</text></g>
-        <g transform="translate(240,0)"><text x="24" y="24">ח׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">23</text></g>
-        <g transform="translate(192,0)"><text x="24" y="24">ט׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">24</text></g>
-        <g transform="translate(144,0)"><text x="24" y="24">י׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">25</text></g>
-        <g transform="translate(96,0)"><text x="24" y="24">י״א</text><text x="24" y="38" font-size="10" fill="#9ca3af">26</text></g>
-        <g transform="translate(48,0)"><text x="24" y="24">י״ב</text><text x="24" y="38" font-size="10" fill="#9ca3af">27</text></g>
-        <g transform="translate(0,0)"><text x="24" y="24">י״ג</text><text x="24" y="38" font-size="10" fill="#9ca3af">28</text></g>
+      <!-- holiday cells (light magenta disc + dot) -->
+      <circle cx="312" cy="18"  r="18" fill="#fbeaf6"/><circle cx="325" cy="6"  r="2.6" fill="#c026d3"/>
+      <circle cx="120" cy="60" r="18" fill="#fbeaf6"/><circle cx="133" cy="48" r="2.6" fill="#c026d3"/>
+      <circle cx="312" cy="60"  r="18" fill="#f4f5f8"/><circle cx="312" cy="102" r="18" fill="#f4f5f8"/><circle cx="312" cy="144" r="18" fill="#f4f5f8"/>
+      <!-- selected day -->
+      <circle cx="120" cy="102" r="18" fill="#4c5fd8"/>
+
+      <!-- labels: gematria (top) + gregorian (bottom) -->
+      <g font-size="13.5" fill="#111827">
+        <!-- row 1 -->
+        <text x="312" y="16" fill="#c026d3">ל׳</text><text x="264" y="16">א׳</text><text x="216" y="16">ב׳</text><text x="168" y="16">ג׳</text><text x="120" y="16">ד׳</text><text x="72" y="16">ה׳</text><text x="24" y="16">ו׳</text>
+        <!-- row 2 -->
+        <text x="312" y="58">ז׳</text><text x="264" y="58">ח׳</text><text x="216" y="58">ט׳</text><text x="168" y="58">י׳</text><text x="120" y="58" fill="#c026d3">י״א</text><text x="72" y="58">י״ב</text><text x="24" y="58">י״ג</text>
+        <!-- row 3 (selected) -->
+        <text x="312" y="100">י״ד</text><text x="264" y="100">ט״ו</text><text x="216" y="100">ט״ז</text><text x="168" y="100">י״ז</text><text x="120" y="100" fill="#ffffff">כ״ג</text><text x="72" y="100">י״ט</text><text x="24" y="100">כ׳</text>
+        <!-- row 4 -->
+        <text x="312" y="142">כ״א</text><text x="264" y="142">כ״ב</text><text x="216" y="142">כ״ד</text><text x="168" y="142">כ״ה</text><text x="120" y="142">כ״ו</text><text x="72" y="142">כ״ז</text><text x="24" y="142">כ״ח</text>
       </g>
-      <!-- row 3 (selected כ״ג / 8) -->
-      <g transform="translate(0,88)" font-weight="700" text-anchor="middle" font-size="14" fill="#111827">
-        <g transform="translate(288,0)"><text x="24" y="24">י״ד</text><text x="24" y="38" font-size="10" fill="#9ca3af">29</text></g>
-        <g transform="translate(240,0)"><text x="24" y="24">ט״ו</text><text x="24" y="38" font-size="10" fill="#9ca3af">30</text></g>
-        <g transform="translate(192,0)"><text x="24" y="24">ט״ז</text><text x="24" y="38" font-size="10" fill="#9ca3af">1</text></g>
-        <g transform="translate(144,0)"><text x="24" y="24">י״ז</text><text x="24" y="38" font-size="10" fill="#9ca3af">2</text></g>
-        <g transform="translate(96,0)"><rect x="4" y="2" width="40" height="40" rx="9" fill="#4c5fd8"/><text x="24" y="24" fill="#fff">כ״ג</text><text x="24" y="38" font-size="10" fill="#ffffffbf">8</text></g>
-        <g transform="translate(48,0)"><text x="24" y="24">י״ט</text><text x="24" y="38" font-size="10" fill="#9ca3af">4</text></g>
-        <g transform="translate(0,0)"><text x="24" y="24">כ׳</text><text x="24" y="38" font-size="10" fill="#9ca3af">5</text></g>
-      </g>
-      <!-- row 4 -->
-      <g transform="translate(0,132)" font-weight="700" text-anchor="middle" font-size="14" fill="#111827">
-        <g transform="translate(288,0)"><text x="24" y="24">כ״א</text><text x="24" y="38" font-size="10" fill="#9ca3af">6</text></g>
-        <g transform="translate(240,0)"><text x="24" y="24">כ״ב</text><text x="24" y="38" font-size="10" fill="#9ca3af">7</text></g>
-        <g transform="translate(192,0)"><text x="24" y="24">כ״ד</text><text x="24" y="38" font-size="10" fill="#9ca3af">9</text></g>
-        <g transform="translate(144,0)"><text x="24" y="24">כ״ה</text><text x="24" y="38" font-size="10" fill="#9ca3af">10</text></g>
-        <g transform="translate(96,0)"><text x="24" y="24">כ״ו</text><text x="24" y="38" font-size="10" fill="#9ca3af">11</text></g>
-        <g transform="translate(48,0)"><text x="24" y="24">כ״ז</text><text x="24" y="38" font-size="10" fill="#9ca3af">12</text></g>
-        <g transform="translate(0,0)"><text x="24" y="24">כ״ח</text><text x="24" y="38" font-size="10" fill="#9ca3af">13</text></g>
+      <g font-size="9" fill="#9ca3af">
+        <text x="312" y="27" fill="#d19bc9">15</text><text x="264" y="27">16</text><text x="216" y="27">17</text><text x="168" y="27">18</text><text x="120" y="27">19</text><text x="72" y="27">20</text><text x="24" y="27">21</text>
+        <text x="312" y="69">22</text><text x="264" y="69">23</text><text x="216" y="69">24</text><text x="168" y="69">25</text><text x="120" y="69" fill="#d19bc9">26</text><text x="72" y="69">27</text><text x="24" y="69">28</text>
+        <text x="312" y="111">29</text><text x="264" y="111">30</text><text x="216" y="111">1</text><text x="168" y="111">2</text><text x="120" y="111" fill="#ffffffbf">8</text><text x="72" y="111">4</text><text x="24" y="111">5</text>
+        <text x="312" y="153">6</text><text x="264" y="153">7</text><text x="216" y="153">9</text><text x="168" y="153">10</text><text x="120" y="153">11</text><text x="72" y="153">12</text><text x="24" y="153">13</text>
       </g>
     </g>
   </g>
