@@ -442,14 +442,17 @@
 .hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) .hdp-gem-sm { color: inherit; }
 /* shabbat tint is dropped in the clean skin (kept minimal) */
 .hdp.hdp-clean .hdp-cell.hdp-shabbat:not(.is-selected):not(.hdp-holiday) { background: transparent; }
-/* range: square in-range band, circular endpoints */
+/* range: same circles as ordinary days (identical to the rounded skin) —
+   the cells stay square (aspect-ratio 1/1 from the base clean rule), so the
+   endpoints are perfect circles, never stretched ellipses. */
 .hdp.hdp-clean .hdp-cell.is-in-range,
 .hdp.hdp-clean .hdp-cell.is-range-start,
-.hdp.hdp-clean .hdp-cell.is-range-end { aspect-ratio: auto; align-self: stretch; }
-.hdp.hdp-clean .hdp-cell.is-in-range { background: var(--hdp-primary-soft); border-radius: 0; }
-.hdp.hdp-clean .hdp-cell.is-range-start,
-.hdp.hdp-clean .hdp-cell.is-range-end { background: var(--hdp-primary); color: #fff; border-radius: 50%; }
+.hdp.hdp-clean .hdp-cell.is-range-end,
 .hdp.hdp-clean .hdp-cell.is-range-single { border-radius: 50%; }
+.hdp.hdp-clean .hdp-cell.is-in-range { background: var(--hdp-primary-soft); }
+.hdp.hdp-clean .hdp-cell.is-range-start,
+.hdp.hdp-clean .hdp-cell.is-range-end,
+.hdp.hdp-clean .hdp-cell.is-range-single { background: var(--hdp-primary); color: #fff; }
 
 /* months / years: borderless tiles, grey hover, primary selected */
 .hdp.hdp-clean .hdp-mycell {

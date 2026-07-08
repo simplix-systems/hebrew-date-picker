@@ -531,7 +531,14 @@ export class CalendarView {
   // ----- Hebrew -----
   private renderHeb(): void {
     const L = this.opt.labels;
-    const months = getMonthsForYear(this.heb.year);
+    let months = getMonthsForYear(this.heb.year);
+    if (months.length === 0) {
+      // Defense-in-depth: an unsupported/extreme year yields no months. Rather
+      // than crash, fall back to today's Hebrew date.
+      this.heb = { ...gregToHebParts(new Date()) };
+      this.greg = new Date();
+      months = getMonthsForYear(this.heb.year);
+    }
     const curMonth = months.find((m) => m.num === this.heb.month) || months[0];
     this.heb.month = curMonth.num;
 

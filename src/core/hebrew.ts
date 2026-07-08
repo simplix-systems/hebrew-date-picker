@@ -120,8 +120,12 @@ export function buildYear(hebYear: number): {
   // Iterate at local noon and step with setDate() so Daylight-Saving-Time
   // transitions can never skip or double a calendar day (a ±1h shift around
   // midnight would otherwise corrupt month lengths). See tests/timezone.
+  // NOTE: use setFullYear() so years 0–99 CE are NOT remapped to 1900–1999 by
+  // the Date(year, …) two-digit-year rule (that broke Hebrew years 3761–3860).
   const from = new Date(baseGreg, 7, 1, 12); // Aug 1, 12:00
+  from.setFullYear(baseGreg);
   const to = new Date(baseGreg + 1, 10, 30, 12); // Nov 30 of next year, 12:00
+  to.setFullYear(baseGreg + 1);
 
   const months: HebrewMonth[] = [];
   let cur: HebrewMonth | null = null;
