@@ -37,7 +37,7 @@ interface Resolved {
   timeFormat: TimeFormat;
   timeStyle: TimeStyle;
   rounded: boolean;
-  clean: boolean;
+  headerBorder: boolean;
   primaryColor: string;
   theme: Theme;
   size: PickerSize;
@@ -93,7 +93,7 @@ export class DatePicker {
       timeFormat: options.timeFormat ?? g.timeFormat,
       timeStyle: options.timeStyle ?? g.timeStyle,
       rounded: options.rounded ?? g.rounded,
-      clean: options.clean ?? g.clean,
+      headerBorder: options.headerBorder ?? g.headerBorder,
       primaryColor: options.primaryColor ?? g.primaryColor,
       theme: options.theme ?? 'light',
       size: options.size ?? g.size,
@@ -267,7 +267,7 @@ export class DatePicker {
       ' hdp-size-' + this.opt.size +
       (this.opt.compact ? ' hdp-compact' : '') +
       (this.opt.rounded ? ' hdp-rounded' : '') +
-      (this.opt.clean ? ' hdp-clean' : '') +
+      (this.opt.headerBorder ? '' : ' hdp-head-plain') +
       (this.opt.theme === 'dark' ? ' hdp-dark' : '') +
       (this.opt.theme === 'auto' ? ' hdp-theme-auto' : '') +
       (ltr ? ' hdp-ltr' : '');

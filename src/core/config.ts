@@ -71,7 +71,7 @@ const globalConfig: GlobalConfig = {
   timeStyle: 'normal',
   lang: 'he',
   rounded: false,
-  clean: false,
+  headerBorder: true,
   primaryColor: '',
   size: 'md',
   compact: false,

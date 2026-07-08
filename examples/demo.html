@@ -89,7 +89,13 @@
     .stage-picker { display: flex; justify-content: center; width: 100%; }
     .out { font-size: 14px; color: var(--heading); background: var(--bg); border-radius: 10px; padding: 11px 15px; width: 100%; text-align: center; }
     .out b { color: var(--brand); font-variant-numeric: tabular-nums; }
-    code.snippet { display: block; width: 100%; background: var(--code-bg); color: var(--code-fg); border-radius: 10px; padding: 14px; font-size: 12px; white-space: pre-wrap; line-height: 1.6; direction: ltr; text-align: left; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+    .snippet-wrap { width: 100%; }
+    .snippet-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .snippet-bar select { font: inherit; font-size: 12.5px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); cursor: pointer; }
+    .snippet-bar #copyBtn { margin-inline-start: auto; font: inherit; font-size: 12.5px; font-weight: 600; padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--heading); cursor: pointer; transition: .12s; }
+    .snippet-bar #copyBtn:hover { border-color: var(--brand); color: var(--brand); }
+    .snippet-bar #copyBtn.copied { background: var(--brand); color: #fff; border-color: var(--brand); }
+    code.snippet { display: block; width: 100%; background: var(--code-bg); color: var(--code-fg); border-radius: 10px; padding: 14px; font-size: 12px; white-space: pre; overflow-x: auto; line-height: 1.6; direction: ltr; text-align: left; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 
     /* ---------- Date input (showInput mode) ---------- */
     .di-wrap { position: relative; width: 290px; max-width: 100%; }
@@ -201,7 +207,7 @@
         <label class="chk"><input type="checkbox" id="diaspora" /> <span data-i18n="c_diaspora">diaspora</span></label>
         <label class="chk"><input type="checkbox" id="compact" /> <span data-i18n="c_compact">compact</span></label>
         <label class="chk"><input type="checkbox" id="rounded" /> <span data-i18n="c_rounded">rounded</span></label>
-        <label class="chk"><input type="checkbox" id="clean" /> <span data-i18n="c_clean">clean (Filament skin)</span></label>
+        <label class="chk"><input type="checkbox" id="headerBorder" checked /> <span data-i18n="c_headerBorder">headerBorder (frame the header buttons)</span></label>
       </div>
 
       <div class="divider"></div>
@@ -225,7 +231,21 @@
     <section class="card stage">
       <div class="stage-picker" id="stageInner"></div>
       <div class="out"><span data-i18n="result">Result</span>: <b id="out">—</b></div>
-      <code class="snippet" id="snippet"></code>
+      <div class="snippet-wrap">
+        <div class="snippet-bar">
+          <select id="snippetLang" aria-label="Framework">
+            <option value="core">Vanilla JS</option>
+            <option value="vue">Vue</option>
+            <option value="react">React</option>
+            <option value="svelte">Svelte</option>
+            <option value="angular">Angular</option>
+            <option value="webcomponent">Web Component</option>
+            <option value="filament">Filament (PHP)</option>
+          </select>
+          <button id="copyBtn" type="button" data-i18n="copy">Copy</button>
+        </div>
+        <code class="snippet" id="snippet"></code>
+      </div>
     </section>
   </main>
 
@@ -244,9 +264,9 @@
         o_light: 'בהיר', o_dark: 'כהה', o_auto: 'אוטו',
         s_display: 'מצב הצגה', showInput: 'showInput (לוח נפתח מאינפוט)', disp_hebrew: 'תצוגת עברי', disp_gregorian: 'תצוגת לועזי',
         s_info: 'תצוגה ומידע', c_holidays: 'הדגשת חגים', c_shabbat: 'הדגשת שבת', c_parasha: 'פרשת השבוע',
-        c_outside: 'ימי חודש קודם/הבא', c_diaspora: 'חו״ל (diaspora)', c_compact: 'מצומצם', c_rounded: 'תאים עגולים', c_clean: 'עיצוב פילאמנט נקי',
+        c_outside: 'ימי חודש קודם/הבא', c_diaspora: 'חו״ל (diaspora)', c_compact: 'מצומצם', c_rounded: 'תאים עגולים', c_headerBorder: 'מסגרת סביב כפתורי הכותרת',
         s_time: 'שעה', c_time: 'בורר שעה', c_seconds: 'שניות', ts_native: 'מכשיר', ts_clock: 'שעון',
-        result: 'תוצאה', typed: 'הוקלד', calWord: 'לוח', rangeWord: 'טווח', clickToPick: 'לחצו לבחירת תאריך', clearTitle: 'נקה'
+        result: 'תוצאה', typed: 'הוקלד', calWord: 'לוח', rangeWord: 'טווח', clickToPick: 'לחצו לבחירת תאריך', clearTitle: 'נקה', copy: 'העתק', copied: 'הועתק ✓'
       },
       en: {
         title: 'Hebrew Date Picker', subtitle: 'Play with every prop — the picker updates live', kbd: 'Keyboard shortcuts test',
@@ -256,9 +276,9 @@
         o_light: 'light', o_dark: 'dark', o_auto: 'auto',
         s_display: 'Display mode', showInput: 'showInput (popup from an input)', disp_hebrew: 'Hebrew display', disp_gregorian: 'Gregorian display',
         s_info: 'Display & info', c_holidays: 'highlightHolidays', c_shabbat: 'highlightShabbat', c_parasha: 'showParasha',
-        c_outside: 'outsideDays', c_diaspora: 'diaspora', c_compact: 'compact', c_rounded: 'rounded', c_clean: 'clean (Filament skin)',
+        c_outside: 'outsideDays', c_diaspora: 'diaspora', c_compact: 'compact', c_rounded: 'rounded', c_headerBorder: 'headerBorder (frame the header buttons)',
         s_time: 'Time', c_time: 'time (time picker)', c_seconds: 'seconds', ts_native: 'native', ts_clock: 'clock',
-        result: 'Result', typed: 'typed', calWord: 'cal', rangeWord: 'range', clickToPick: 'Click to pick a date', clearTitle: 'Clear'
+        result: 'Result', typed: 'typed', calWord: 'cal', rangeWord: 'range', clickToPick: 'Click to pick a date', clearTitle: 'Clear', copy: 'Copy', copied: 'Copied ✓'
       }
     };
     let uiLang = 'he';
@@ -307,7 +327,7 @@
         size: val('size'), highlightHolidays: chk('highlightHolidays'),
         highlightShabbat: chk('highlightShabbat'), showParasha: chk('showParasha'),
         outsideDays: chk('outsideDays'), diaspora: chk('diaspora'), compact: chk('compact'),
-        rounded: chk('rounded'), clean: chk('clean'),
+        rounded: chk('rounded'), headerBorder: chk('headerBorder'),
         lang: uiLang, theme: resolveTheme(),
         time: chk('time'), seconds: chk('seconds'), timeFormat: val('timeFormat'), timeStyle: val('timeStyle'),
         displayCalendar: val('displayCalendar'), closeOnSelect: chk('closeOnSelect')
@@ -480,6 +500,107 @@
     }
     window.addEventListener('resize', syncControlsHeight);
 
+    /* ---------------- Code snippet (per framework) ---------------- */
+    const PKG = '@simplix-systems/hebrew-date-picker';
+    const snippetLang = document.getElementById('snippetLang');
+    const copyBtn = document.getElementById('copyBtn');
+    let lastOpts = {}, lastIsInput = false;
+
+    // Library defaults — props equal to these are omitted from the snippet.
+    const DEF = {
+      calendar: 'hebrew', mode: 'single', precision: 'day', size: 'md',
+      highlightHolidays: true, highlightShabbat: true, showParasha: true,
+      outsideDays: false, diaspora: false, compact: false, rounded: false,
+      headerBorder: true, time: false, seconds: false, timeFormat: '24',
+      timeStyle: 'native', displayCalendar: 'hebrew', closeOnSelect: true,
+      lang: 'he', theme: 'light'
+    };
+    // Which props to surface, and only when they differ from the default.
+    function activeProps() {
+      const o = lastOpts;
+      const keep = (k) => o[k] !== undefined && o[k] !== '' && o[k] !== DEF[k];
+      const order = ['calendar','mode','precision','size','theme','lang','displayCalendar',
+        'rounded','headerBorder','highlightHolidays','highlightShabbat','showParasha',
+        'outsideDays','diaspora','compact','time','seconds','timeFormat','timeStyle',
+        'closeOnSelect','primaryColor'];
+      // displayCalendar only matters with an input; drop it for the inline demo
+      return order.filter(k => keep(k) && !(k === 'displayCalendar' && !lastIsInput))
+                  .map(k => [k, o[k]]);
+    }
+    const kebab = (k) => k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
+    const jsVal = (v) => typeof v === 'string' ? `'${v}'` : String(v);
+
+    const SNIPPETS = {
+      core(props, isInput) {
+        const body = props.map(([k, v]) => `  ${k}: ${jsVal(v)},`).join('\n');
+        return `import { DatePicker } from '${PKG}';\nimport '${PKG}/style.css';\n\n`
+          + `new DatePicker({\n${body}${body ? '\n' : ''}  onSelect: (r) => { /* … */ },\n})`
+          + `.${isInput ? 'open(inputEl)' : 'mount(el)'};`;
+      },
+      vue(props) {
+        const attrs = props.map(([k, v]) => typeof v === 'string' ? `  ${k}="${v}"`
+          : v === true ? `  ${k}` : `  :${k}="${v}"`).join('\n');
+        return `<script setup>\nimport { HebrewDatePicker } from '${PKG}/vue';\nimport '${PKG}/style.css';\nconst value = ref(null);\n</` + `script>\n\n`
+          + `<template>\n  <HebrewDatePicker\n    v-model="value"\n${attrs.replace(/^  /gm, '    ')}\n    @change="(r) => {}"\n  />\n</template>`;
+      },
+      react(props) {
+        const attrs = props.map(([k, v]) => typeof v === 'string' ? `  ${k}="${v}"`
+          : v === true ? `  ${k}` : `  ${k}={${v}}`).join('\n');
+        return `import { HebrewDatePicker } from '${PKG}/react';\nimport '${PKG}/style.css';\n\n`
+          + `<HebrewDatePicker\n  value={value}\n  onChange={(v, r) => {}}\n${attrs}\n/>`;
+      },
+      svelte(props) {
+        const attrs = props.map(([k, v]) => typeof v === 'string' ? `${k}="${v}"`
+          : v === true ? `${k}` : `${k}={${v}}`).join(' ');
+        return `<script>\n  import { HebrewDatePicker } from '${PKG}/svelte';\n  import '${PKG}/style.css';\n  let value;\n</` + `script>\n\n`
+          + `<HebrewDatePicker bind:value ${attrs} on:change={(e) => {}} />`;
+      },
+      angular(props) {
+        const attrs = props.map(([k, v]) => typeof v === 'string' ? `  ${k}="${v}"`
+          : `  [${k}]="${v}"`).join('\n');
+        return `<!-- import HebrewDatePickerComponent from '${PKG}/angular' -->\n`
+          + `<hebrew-date-picker\n  [(value)]="value"\n${attrs}\n  (change)="onChange($event)"\n></hebrew-date-picker>`;
+      },
+      webcomponent(props) {
+        const attrs = props.map(([k, v]) => typeof v === 'string' ? `  ${kebab(k)}="${v}"`
+          : v === true ? `  ${kebab(k)}` : `  ${kebab(k)}="${v}"`).join('\n');
+        return `<script type="module">\n  import '${PKG}/webcomponent';\n  import '${PKG}/style.css';\n</` + `script>\n\n`
+          + `<hebrew-date-picker\n${attrs}\n></hebrew-date-picker>`;
+      },
+      filament(props) {
+        const o = Object.fromEntries(props);
+        const lines = [];
+        if (o.calendar) lines.push(`->calendar('${o.calendar}')`);
+        if (o.mode === 'range') lines.push('->range()');
+        if (o.precision === 'month') lines.push('->monthOnly()');
+        if (o.precision === 'year') lines.push('->yearOnly()');
+        if (o.time) lines.push('->time()');
+        if (o.seconds) lines.push('->seconds()');
+        if (o.timeFormat) lines.push(`->timeFormat('${o.timeFormat}')`);
+        if (o.timeStyle) lines.push(`->timeStyle('${o.timeStyle}')`);
+        if (o.diaspora) lines.push('->diaspora()');
+        if (o.outsideDays) lines.push('->outsideDays()');
+        if ('rounded' in o) lines.push(`->rounded(${o.rounded ? '' : 'false'})`);
+        if ('headerBorder' in o) lines.push(`->headerBorder(${o.headerBorder ? '' : 'false'})`);
+        if (o.highlightHolidays === false) lines.push('->holidays(false)');
+        if (o.highlightShabbat === false) lines.push('->shabbat(false)');
+        if (o.showParasha === false) lines.push('->parasha(false)');
+        if (o.compact) lines.push('->compact()');
+        if (o.size) lines.push(`->size('${o.size}')`);
+        if (o.closeOnSelect === false) lines.push('->closeOnSelect(false)');
+        if (o.primaryColor) lines.push(`->primaryColor('${o.primaryColor}')`);
+        if (o.lang) lines.push(`->lang('${o.lang}')`);
+        const chain = lines.map(l => '    ' + l).join('\n');
+        return `use SimplixSystems\\HebrewDatePicker\\Forms\\Components\\HebrewDatePicker;\n\n`
+          + `HebrewDatePicker::make('date')\n${chain}${chain ? '\n' : ''}    ->label('תאריך');`;
+      }
+    };
+
+    function renderSnippet() {
+      const lang = snippetLang.value;
+      snippet.textContent = SNIPPETS[lang](activeProps(), lastIsInput);
+    }
+
     function rebuild() {
       const opts = options();
       picker?.destroy?.();
@@ -499,16 +620,23 @@
         }).mount(stageInner);
       }
 
-      const lines = Object.entries(opts)
-        .filter(([, v]) => v !== '' && v !== false && v !== undefined && v !== 'md')
-        .map(([k, v]) => `  ${k}: ${typeof v === 'string' ? `'${v}'` : v},`).join('\n');
-      snippet.textContent = `new DatePicker({\n${lines}\n  onSelect: (r) => …\n}).${chk('showInput') ? 'open(inputEl)' : 'mount(el)'};`;
+      lastOpts = opts;
+      lastIsInput = chk('showInput');
+      renderSnippet();
     }
 
     document.querySelectorAll('.controls input:not([name="theme"])').forEach((el) => el.addEventListener('change', rebuild));
     document.querySelectorAll('input[name="theme"]').forEach((r) => r.addEventListener('change', () => applyTheme(r.value)));
     document.querySelectorAll('[data-lang]').forEach((b) => b.addEventListener('click', () => applyLang(b.dataset.lang)));
     document.querySelectorAll('[data-theme-btn]').forEach((b) => b.addEventListener('click', () => applyTheme(b.dataset.themeBtn)));
+    snippetLang.addEventListener('change', renderSnippet);
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(snippet.textContent);
+        copyBtn.textContent = t('copied'); copyBtn.classList.add('copied');
+        setTimeout(() => { copyBtn.textContent = t('copy'); copyBtn.classList.remove('copied'); }, 1400);
+      } catch (e) { /* clipboard blocked */ }
+    });
     let savedTheme = 'auto';
     try { savedTheme = localStorage.getItem('hdp-demo-theme') || 'auto'; } catch (e) { /* noop */ }
     applyTheme(savedTheme);

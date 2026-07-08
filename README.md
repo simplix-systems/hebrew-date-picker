@@ -178,7 +178,7 @@ Every option works as a prop (Vue/React/Svelte/Angular) and as a `DatePicker` co
 | `timeStyle` | `'native' \| 'dropdown' \| 'stepper' \| 'clock'` | `'dropdown'` | `native` = the device/OS time picker; `dropdown` = select menus; `stepper` = up/down steppers; `clock` = analog clock dial. (`normal`→dropdown, `mobile`→clock still accepted.) |
 | `lang` | `'he' \| 'en'` | `'he'` | UI language (label preset + default locale); `labels` still override. |
 | `rounded` | `boolean` | `false` | Circular day cells instead of square. |
-| `clean` | `boolean` | `false` | Minimal, Filament-style skin: borderless cells, circular day highlights, grey-scale chrome, primary accent. |
+| `headerBorder` | `boolean` | `true` | Draw a border around the header nav arrows and month/year pills. Set `false` for a borderless header (nothing else changes). |
 | `primaryColor` | `string` | — | Accent color for the confirm button & selected day (any CSS color). |
 | `theme` | `'light' \| 'dark' \| 'auto'` | `'light'` | Color theme. `'auto'` follows the OS/browser preference. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Overall picker size. |

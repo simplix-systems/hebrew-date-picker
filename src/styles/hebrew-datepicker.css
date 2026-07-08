@@ -396,74 +396,19 @@
 .hdp.hdp-rounded .hdp-dot { top: 0; inset-inline-start: 0; }
 
 /* =====================================================================
-   CLEAN SKIN (.hdp-clean) — a minimal, Filament-style look:
-   borderless cells, circular day highlights, grey-scale chrome, primary
-   accent. Colours come from the --hdp-* variables (which the Filament
-   theme maps to Filament's own design tokens). Used by the Filament field;
-   opt into it on the standalone package with `clean: true`.
+   BORDERLESS HEADER (.hdp-head-plain) — drop the frame around the nav
+   arrows and the month/year pills (e.g. to blend into a Filament panel).
+   Nothing else about the grid, highlights or chrome changes.
    ===================================================================== */
-/* chrome: borderless nav + pills, hover = subtle grey */
-.hdp.hdp-clean .hdp-nav,
-.hdp.hdp-clean .hdp-pill {
+.hdp.hdp-head-plain .hdp-nav,
+.hdp.hdp-head-plain .hdp-pill {
   background: transparent; border-color: transparent;
 }
-.hdp.hdp-clean .hdp-nav:hover,
-.hdp.hdp-clean .hdp-pill:hover {
+.hdp.hdp-head-plain .hdp-nav:hover,
+.hdp.hdp-head-plain .hdp-pill:hover {
   background: color-mix(in srgb, var(--hdp-muted) 14%, transparent); border-color: transparent;
 }
-.hdp.hdp-clean .hdp-actions { background: transparent; }
-.hdp.hdp-clean .hdp-sub,
-.hdp.hdp-clean .hdp-preview { background: transparent; color: var(--hdp-muted); font-weight: 500; }
-.hdp.hdp-clean .hdp-preview { padding: 6px 4px 2px; font-size: 12px; }
 
-/* days: no cell fill / border; circular highlights (like the reference) */
-.hdp.hdp-clean .hdp-grid { gap: 2px; }
-.hdp.hdp-clean .hdp-cell {
-  background: transparent; border: none;
-  aspect-ratio: 1 / 1; width: 100%; max-width: var(--hdp-row-h);
-  height: auto; margin: auto; align-self: center; justify-self: center;
-  border-radius: 50%;
-}
-.hdp.hdp-clean .hdp-cell:hover:not(.is-blank):not(.is-disabled):not(.is-selected) {
-  background: color-mix(in srgb, var(--hdp-muted) 14%, transparent); border: none;
-}
-.hdp.hdp-clean .hdp-cell.is-today:not(.is-selected) {
-  border: 2px solid var(--hdp-primary); background: transparent;
-}
-.hdp.hdp-clean .hdp-cell.is-selected {
-  background: var(--hdp-primary); color: #fff; border-radius: 50%;
-}
-/* holiday = soft primary disc, number stays in the normal text colour */
-.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) {
-  background: var(--hdp-primary-soft);
-}
-.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) .hdp-gem,
-.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) .hdp-num,
-.hdp.hdp-clean .hdp-cell.hdp-holiday:not(.is-selected) .hdp-gem-sm { color: inherit; }
-/* shabbat tint is dropped in the clean skin (kept minimal) */
-.hdp.hdp-clean .hdp-cell.hdp-shabbat:not(.is-selected):not(.hdp-holiday) { background: transparent; }
-/* range: same circles as ordinary days (identical to the rounded skin) —
-   the cells stay square (aspect-ratio 1/1 from the base clean rule), so the
-   endpoints are perfect circles, never stretched ellipses. */
-.hdp.hdp-clean .hdp-cell.is-in-range,
-.hdp.hdp-clean .hdp-cell.is-range-start,
-.hdp.hdp-clean .hdp-cell.is-range-end,
-.hdp.hdp-clean .hdp-cell.is-range-single { border-radius: 50%; }
-.hdp.hdp-clean .hdp-cell.is-in-range { background: var(--hdp-primary-soft); }
-.hdp.hdp-clean .hdp-cell.is-range-start,
-.hdp.hdp-clean .hdp-cell.is-range-end,
-.hdp.hdp-clean .hdp-cell.is-range-single { background: var(--hdp-primary); color: #fff; }
-
-/* months / years: borderless tiles, grey hover, primary selected */
-.hdp.hdp-clean .hdp-mycell {
-  background: transparent; border: 1px solid transparent; border-radius: var(--hdp-radius-sm);
-}
-.hdp.hdp-clean .hdp-mycell:hover {
-  background: color-mix(in srgb, var(--hdp-muted) 14%, transparent); border-color: transparent;
-}
-.hdp.hdp-clean .hdp-mycell.is-selected {
-  background: var(--hdp-primary); color: #fff; border-color: var(--hdp-primary);
-}
 
 /* ----- compact / minimal layout: hide secondary info ----- */
 .hdp.hdp-compact .hdp-sub,

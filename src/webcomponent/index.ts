@@ -35,7 +35,7 @@ const BOOL_ATTRS = [
   'time',
   'seconds',
   'rounded',
-  'clean',
+  'header-border',
   'compact',
   'close-on-select'
 ];
@@ -111,7 +111,7 @@ export class HebrewDatePickerElement extends HTMLElement {
       lang: (this.getAttribute('lang') as Lang) || undefined,
       theme: (this.getAttribute('theme') as Theme) || undefined,
       rounded: this.boolAttr('rounded'),
-      clean: this.boolAttr('clean'),
+      headerBorder: this.boolAttr('header-border'),
       primaryColor: this.getAttribute('primary-color') || undefined,
       size: (this.getAttribute('size') as PickerSize) || undefined,
       compact: this.boolAttr('compact'),

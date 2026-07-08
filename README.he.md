@@ -173,7 +173,7 @@ input.addEventListener('click', () => {
 | `lang` | `'he' \| 'en'` | `'he'` | שפת הממשק (תוויות + locale ברירת מחדל); `labels` עדיין גובר. |
 | `seconds` | `boolean` | `false` | בחירת שניות גם (`"YYYY-MM-DDTHH:mm:ss"`). דורש `time`. |
 | `rounded` | `boolean` | `false` | תאי ימים עגולים במקום מרובעים. |
-| `clean` | `boolean` | `false` | עיצוב נקי בסגנון פילאמנט: תאים ללא מסגרת, הדגשת יום עגולה, גוונים אפורים וצבע primary. |
+| `headerBorder` | `boolean` | `true` | מסגרת סביב חיצי הניווט וה-pills של הכותרת. `false` = כותרת ללא מסגרת (שום דבר אחר לא משתנה). |
 | `showTooltips` | `boolean` | `true` | טולטיפ של קיצורי מקלדת על הפקדים. |
 | `diaspora` | `boolean` | `false` | מנהג חו״ל: 2 ימים טובים + פרשיות לפי חו״ל. |
 | `displayCalendar` | `'hebrew' \| 'gregorian'` | `'hebrew'` | הלוח שיוצג ב-input לאחר הבחירה (מצב popup/input). |

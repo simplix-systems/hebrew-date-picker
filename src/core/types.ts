@@ -161,12 +161,11 @@ export interface PickerOptions {
   /** Round (circular) day cells instead of square. Default false. */
   rounded?: boolean;
   /**
-   * Use the "clean" skin — a minimal, Filament-style look: borderless cells,
-   * circular day highlights, grey-scale chrome and the primary accent. Default
-   * false (the standalone package keeps its richer default look). The Filament
-   * field turns this on so it blends into a Filament panel.
+   * Draw a border around the header nav arrows and the month/year pills.
+   * Default true. Set false for a borderless header (e.g. to blend into a
+   * Filament panel) — nothing else about the grid or highlights changes.
    */
-  clean?: boolean;
+  headerBorder?: boolean;
   /** Accent color — used for the confirm button and the selected day. Any CSS color. */
   primaryColor?: string;
   /** Color theme: 'light' (default), 'dark', or 'auto' (follow the OS/browser). */
@@ -210,8 +209,8 @@ export interface GlobalConfig {
   lang: Lang;
   /** Round (circular) day cells by default. Default false. */
   rounded: boolean;
-  /** Use the clean / Filament-style skin by default. Default false. */
-  clean: boolean;
+  /** Draw a border around the header nav/pills by default. Default true. */
+  headerBorder: boolean;
   /** Default accent color (empty = library default). */
   primaryColor: string;
   /** Default size. Default 'md'. */
