@@ -65,7 +65,8 @@
     @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
-    .controls { padding: 18px; overflow-y: auto; position: sticky; top: 20px; }
+    .controls { padding: 18px; position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; }
+    @media (max-width: 820px) { .controls { position: static; max-height: none; } }
     .controls h2 { margin: 0 0 4px; font-size: 15px; }
     .controls .hint { margin: 0 0 14px; font-size: 12px; color: var(--muted); }
     .row { margin-bottom: 15px; }
@@ -85,11 +86,11 @@
     input[type=color] { width: 42px; height: 30px; border: 1px solid var(--border); border-radius: 7px; padding: 0; cursor: pointer; vertical-align: middle; background: var(--card); }
 
     /* ---------- Stage ---------- */
-    .stage { padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 160px; }
+    .stage { padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 160px; min-width: 0; }
     .stage-picker { display: flex; justify-content: center; width: 100%; }
     .out { font-size: 14px; color: var(--heading); background: var(--bg); border-radius: 10px; padding: 11px 15px; width: 100%; text-align: center; }
     .out b { color: var(--brand); font-variant-numeric: tabular-nums; }
-    .snippet-wrap { width: 100%; }
+    .snippet-wrap { width: 100%; min-width: 0; }
     .snippet-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
     .snippet-bar select { font: inherit; font-size: 12.5px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); cursor: pointer; }
     .snippet-bar #copyBtn { margin-inline-start: auto; font: inherit; font-size: 12.5px; font-weight: 600; padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--heading); cursor: pointer; transition: .12s; }
@@ -489,16 +490,9 @@
       return wrap;
     }
 
-    // Cap the controls column to the stage's height so it scrolls internally
-    // instead of pushing the page — you can tweak props and see the result
-    // without scrolling the whole window.
-    const controlsEl = document.querySelector('.controls');
-    const stageEl = document.querySelector('.stage');
-    function syncControlsHeight() {
-      if (window.innerWidth <= 820) { controlsEl.style.maxHeight = ''; return; } // stacked on mobile
-      controlsEl.style.maxHeight = stageEl.offsetHeight + 'px';
-    }
-    window.addEventListener('resize', syncControlsHeight);
+    // The controls column is capped to the viewport height and scrolls
+    // internally (see the .controls CSS), so you can tweak props and watch the
+    // result without scrolling the whole page.
 
     /* ---------------- Code snippet (per framework) ---------------- */
     const PKG = '@simplix-systems/hebrew-date-picker';
@@ -608,7 +602,6 @@
       stageInner.innerHTML = '';
       currentValue = null;
       out.textContent = '—';
-      requestAnimationFrame(syncControlsHeight);
 
       if (chk('showInput')) {
         stageInner.appendChild(buildInput(opts));
