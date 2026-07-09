@@ -96,9 +96,10 @@ export function gregToHebParts(date: Date): HebrewParts {
   };
 }
 
-/** Localized long month name for a Gregorian Date, e.g. "ניסן". */
+/** Localized long month name for a Gregorian Date, e.g. "ניסן".
+ * Normalizes the double-vav spelling to a single vav (חשוון→חשון, סיוון→סיון). */
 export function hebMonthName(date: Date): string {
-  return hebMonthFmt().format(date);
+  return hebMonthFmt().format(date).replace(/וון/g, 'ון');
 }
 
 /** Full Hebrew label, e.g. "ט״ו ניסן תשפ״ו". */

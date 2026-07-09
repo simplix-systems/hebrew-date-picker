@@ -96,14 +96,15 @@
     .snippet-bar #copyBtn { margin-inline-start: auto; font: inherit; font-size: 12.5px; font-weight: 600; padding: 6px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--heading); cursor: pointer; transition: .12s; }
     .snippet-bar #copyBtn:hover { border-color: var(--brand); color: var(--brand); }
     .snippet-bar #copyBtn.copied { background: var(--brand); color: #fff; border-color: var(--brand); }
-    code.snippet { display: block; width: 100%; background: var(--code-bg); color: var(--code-fg); border-radius: 10px; padding: 14px; font-size: 12px; white-space: pre; overflow-x: auto; line-height: 1.6; direction: ltr; text-align: left; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+    code.snippet { display: block; width: 100%; max-height: 300px; background: var(--code-bg); color: var(--code-fg); border-radius: 10px; padding: 14px; font-size: 12px; white-space: pre; overflow: auto; line-height: 1.6; direction: ltr; text-align: left; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
 
     /* ---------- Date input (showInput mode) ---------- */
     .di-wrap { position: relative; width: 290px; max-width: 100%; }
     .di-input { width: 100%; font: inherit; font-size: 15px; padding: 11px 40px 11px 36px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); }
     .di-input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
     .di-input[readonly] { cursor: pointer; }
-    .di-cal { position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%); font-size: 17px; opacity: .6; pointer-events: none; }
+    .di-cal { position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%); font-size: 17px; opacity: .6; cursor: pointer; }
+    .di-cal:hover { opacity: .9; }
     .di-clear { position: absolute; inset-inline-end: 9px; top: 50%; transform: translateY(-50%); border: none; background: var(--border); color: var(--heading); width: 21px; height: 21px; border-radius: 50%; cursor: pointer; font-size: 12px; line-height: 1; display: none; }
     .di-clear.show { display: inline-flex; align-items: center; justify-content: center; }
   </style>
@@ -196,6 +197,16 @@
           <label><input type="radio" name="displayCalendar" value="gregorian" /><span data-i18n="disp_gregorian">Gregorian display</span></label>
         </div>
         <label class="chk"><input type="checkbox" id="closeOnSelect" checked /> <span>closeOnSelect</span></label>
+        <label class="chk"><input type="checkbox" id="openOnInputClick" checked /> <span data-i18n="openOnInput">openOnInputClick</span></label>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row"><label class="title" data-i18n="p_range">min / max</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <label style="font-size:12px; color:var(--muted);"><span data-i18n="minLbl">min</span><br/><input type="date" id="minDate" style="font:inherit; font-size:13px; padding:5px 8px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--text);" /></label>
+          <label style="font-size:12px; color:var(--muted);"><span data-i18n="maxLbl">max</span><br/><input type="date" id="maxDate" style="font:inherit; font-size:13px; padding:5px 8px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--text);" /></label>
+        </div>
       </div>
 
       <div class="divider"></div>
@@ -267,7 +278,8 @@
         s_info: 'תצוגה ומידע', c_holidays: 'הדגשת חגים', c_shabbat: 'הדגשת שבת', c_parasha: 'פרשת השבוע',
         c_outside: 'ימי חודש קודם/הבא', c_diaspora: 'חו״ל (diaspora)', c_compact: 'מצומצם', c_rounded: 'תאים עגולים', c_headerBorder: 'מסגרת סביב כפתורי הכותרת',
         s_time: 'שעה', c_time: 'בורר שעה', c_seconds: 'שניות', ts_native: 'מכשיר', ts_clock: 'שעון',
-        result: 'תוצאה', typed: 'הוקלד', calWord: 'לוח', rangeWord: 'טווח', clickToPick: 'לחצו לבחירת תאריך', clearTitle: 'נקה', copy: 'העתק', copied: 'הועתק ✓'
+        result: 'תוצאה', typed: 'הוקלד', pasted: 'הודבק', calWord: 'לוח', rangeWord: 'טווח', clickToPick: 'לחצו לבחירת תאריך', clearTitle: 'נקה', copy: 'העתק', copied: 'הועתק ✓',
+        openOnInput: 'פתיחה בלחיצה על ה-input', p_range: 'טווח תאריכים (min / max)', minLbl: 'מ-', maxLbl: 'עד'
       },
       en: {
         title: 'Hebrew Date Picker', subtitle: 'Play with every prop — the picker updates live', kbd: 'Keyboard shortcuts test',
@@ -279,7 +291,8 @@
         s_info: 'Display & info', c_holidays: 'highlightHolidays', c_shabbat: 'highlightShabbat', c_parasha: 'showParasha',
         c_outside: 'outsideDays', c_diaspora: 'diaspora', c_compact: 'compact', c_rounded: 'rounded', c_headerBorder: 'headerBorder (frame the header buttons)',
         s_time: 'Time', c_time: 'time (time picker)', c_seconds: 'seconds', ts_native: 'native', ts_clock: 'clock',
-        result: 'Result', typed: 'typed', calWord: 'cal', rangeWord: 'range', clickToPick: 'Click to pick a date', clearTitle: 'Clear', copy: 'Copy', copied: 'Copied ✓'
+        result: 'Result', typed: 'typed', pasted: 'pasted', calWord: 'cal', rangeWord: 'range', clickToPick: 'Click to pick a date', clearTitle: 'Clear', copy: 'Copy', copied: 'Copied ✓',
+        openOnInput: 'openOnInputClick', p_range: 'date range (min / max)', minLbl: 'min', maxLbl: 'max'
       }
     };
     let uiLang = 'he';
@@ -331,8 +344,13 @@
         rounded: chk('rounded'), headerBorder: chk('headerBorder'),
         lang: uiLang, theme: resolveTheme(),
         time: chk('time'), seconds: chk('seconds'), timeFormat: val('timeFormat'), timeStyle: val('timeStyle'),
-        displayCalendar: val('displayCalendar'), closeOnSelect: chk('closeOnSelect')
+        displayCalendar: val('displayCalendar'), closeOnSelect: chk('closeOnSelect'),
+        openOnInputClick: chk('openOnInputClick')
       };
+      const minV = document.getElementById('minDate').value;
+      const maxV = document.getElementById('maxDate').value;
+      if (minV) o.min = minV;
+      if (maxV) o.max = maxV;
       if (chk('usecolor')) o.primaryColor = document.getElementById('primaryColor').value;
       return o;
     }
@@ -365,6 +383,15 @@
       const d = new Date(+yyyy, +mm - 1, +dd);
       if (d.getDate() !== +dd || d.getMonth() !== +mm - 1) return '';
       return toISO(d);
+    }
+    // Flexible Gregorian parse for PASTED text: DD/MM/YYYY, D.M.YYYY, YYYY-MM-DD…
+    function parseGregFlexible(text) {
+      text = String(text).trim();
+      let m = text.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/);
+      if (m) { const d = new Date(+m[3], +m[2] - 1, +m[1]); if (d.getDate() === +m[1] && d.getMonth() === +m[2] - 1) return toISO(d); }
+      m = text.match(/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})$/);
+      if (m) { const d = new Date(+m[1], +m[2] - 1, +m[3]); if (d.getMonth() === +m[2] - 1 && d.getDate() === +m[3]) return toISO(d); }
+      return '';
     }
     // A masked DD/MM/YYYY date (imask-style, but no underscores): auto-insert the
     // "/" separators and clamp out-of-range day/month as they're typed.
@@ -402,7 +429,13 @@
         '<button class="di-clear" type="button"></button>';
       const input = wrap.querySelector('.di-input');
       const clear = wrap.querySelector('.di-clear');
-      input.readOnly = !editable;
+      const calIcon = wrap.querySelector('.di-cal');
+      const gregDisplay = opts.displayCalendar === 'gregorian';
+      // Does clicking the INPUT open the picker? Honored only for a Gregorian
+      // display (Hebrew always opens); false = open only via the calendar icon.
+      const openByInputClick = !gregDisplay || opts.openOnInputClick !== false;
+      // Never readonly (so paste fires); non-editable inputs block typed chars.
+      input.readOnly = false;
       input.placeholder = editable ? 'DD/MM/YYYY' : t('clickToPick');
       clear.title = t('clearTitle');
       clear.textContent = '✕';
@@ -448,8 +481,32 @@
         // focus on the calendar; the user must click the input again to edit it.
       };
 
-      input.addEventListener('click', open);
-      input.addEventListener('focus', open);
+      // The calendar icon always opens the picker.
+      calIcon.addEventListener('click', (e) => { e.stopPropagation(); open(); });
+      if (openByInputClick) {
+        input.addEventListener('click', open);
+        input.addEventListener('focus', open);
+      }
+      // Pasting a Gregorian date works in ANY display (even Hebrew): parse it and
+      // show the result in the current calendar.
+      input.addEventListener('paste', (e) => {
+        const txt = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+        const iso = parseGregFlexible(txt);
+        if (iso) {
+          e.preventDefault();
+          currentValue = iso;
+          out.textContent = `iso: ${iso} (${t('pasted')})`;
+          if (picker) picker.setValue(iso);
+          refresh();
+        }
+      });
+      // Non-editable inputs: allow click / paste / navigation, block typed chars.
+      if (!editable) {
+        input.addEventListener('keydown', (e) => {
+          if (e.ctrlKey || e.metaKey || e.key.length !== 1) return;
+          e.preventDefault();
+        });
+      }
 
       if (editable) {
         const commitTyped = () => {
@@ -516,18 +573,18 @@
       outsideDays: true, diaspora: false, compact: false, rounded: false,
       headerBorder: true, time: false, seconds: false, timeFormat: '24',
       timeStyle: 'native', displayCalendar: 'hebrew', closeOnSelect: true,
-      lang: 'he', theme: 'light'
+      openOnInputClick: true, lang: 'he', theme: 'light'
     };
     // Which props to surface, and only when they differ from the default.
     function activeProps() {
       const o = lastOpts;
       const keep = (k) => o[k] !== undefined && o[k] !== '' && o[k] !== DEF[k];
       const order = ['calendar','mode','precision','size','theme','lang','displayCalendar',
-        'rounded','headerBorder','highlightHolidays','highlightShabbat','showParasha',
+        'min','max','rounded','headerBorder','highlightHolidays','highlightShabbat','showParasha',
         'outsideDays','diaspora','compact','time','seconds','timeFormat','timeStyle',
-        'closeOnSelect','primaryColor'];
-      // displayCalendar only matters with an input; drop it for the inline demo
-      return order.filter(k => keep(k) && !(k === 'displayCalendar' && !lastIsInput))
+        'closeOnSelect','openOnInputClick','primaryColor'];
+      // input-only props are dropped for the inline demo
+      return order.filter(k => keep(k) && !(['displayCalendar','openOnInputClick'].includes(k) && !lastIsInput))
                   .map(k => [k, o[k]]);
     }
     const kebab = (k) => k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
@@ -590,7 +647,10 @@
         if (o.showParasha === false) lines.push('->parasha(false)');
         if (o.compact) lines.push('->compact()');
         if (o.size) lines.push(`->size('${o.size}')`);
+        if (o.min) lines.push(`->minDate('${o.min}')`);
+        if (o.max) lines.push(`->maxDate('${o.max}')`);
         if (o.closeOnSelect === false) lines.push('->closeOnSelect(false)');
+        if (o.openOnInputClick === false) lines.push('->openOnInputClick(false)');
         if (o.primaryColor) lines.push(`->primaryColor('${o.primaryColor}')`);
         if (o.lang) lines.push(`->lang('${o.lang}')`);
         const chain = lines.map(l => '    ' + l).join('\n');

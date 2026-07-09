@@ -124,7 +124,7 @@
   border-radius: var(--hdp-radius-sm); padding: 2px; cursor: pointer; display: flex;
   flex-direction: column; align-items: center; justify-content: center; font: inherit; color: inherit;
 }
-.hdp-cell:hover:not(.is-blank):not(.is-disabled) {
+.hdp-cell:hover:not(.is-blank):not(.is-disabled):not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-range-single) {
   background: var(--hdp-primary-soft); border-color: var(--hdp-primary);
 }
 /* keep hovered (non-selected) text dark & readable on the light hover tint,
