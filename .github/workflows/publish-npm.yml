@@ -68,7 +68,10 @@ jobs:
 
       - name: Publish
         if: steps.v.outputs.exists == 'no' && env.NPM_TOKEN != ''
-        run: npm publish
+        run: |
+          echo "npm registry: $(npm config get registry)"
+          echo "authenticated as: $(npm whoami 2>/dev/null || echo '(whoami unavailable — automation token)')"
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
 
