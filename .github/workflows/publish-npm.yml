@@ -43,8 +43,8 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm install
-
+      # Bump on the fresh (clean) checkout, BEFORE install — `npm version`
+      # refuses to run once `npm install` has touched package-lock.json.
       - name: Bump version (manual runs only)
         if: github.event_name == 'workflow_dispatch' && inputs.release_type != 'none'
         run: |
@@ -52,6 +52,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           npm version ${{ inputs.release_type }} -m "release: v%s [skip ci]"
           git push --follow-tags
+
+      - run: npm install
 
       - name: Read version and check npm
         id: v
