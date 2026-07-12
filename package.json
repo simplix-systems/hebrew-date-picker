@@ -82,6 +82,7 @@
   ],
   "scripts": {
     "build": "tsup && tsup --config tsup.browser.config.ts && npm run build:css && npm run build:svelte",
+    "prepublishOnly": "npm run build",
     "build:css": "node scripts/copy-css.mjs",
     "build:svelte": "svelte-package -i src/svelte -o dist/svelte || echo 'svelte-package optional'",
     "typecheck": "tsc --noEmit",

@@ -1,0 +1,81 @@
+name: Publish to npm
+
+# Two ways to release:
+#  1. MANUAL (recommended — no local commands): GitHub → Actions → "Publish to
+#     npm" → Run workflow → pick patch / minor / major. It bumps the version,
+#     commits + tags, builds and publishes.
+#  2. AUTO: bump the "version" in package.json and push to main — this publishes
+#     it (and does nothing if that version is already on npm).
+#
+# One-time setup: add an npm "Automation" access token as the repo secret
+# NPM_TOKEN (Settings → Secrets and variables → Actions → New repository secret).
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Version bump (choose "none" to publish the current package.json version as-is)'
+        type: choice
+        options: [patch, minor, major, none]
+        default: patch
+  push:
+    branches: [main]
+
+concurrency:
+  group: publish-npm
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm install
+
+      - name: Bump version (manual runs only)
+        if: github.event_name == 'workflow_dispatch' && inputs.release_type != 'none'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm version ${{ inputs.release_type }} -m "release: v%s [skip ci]"
+          git push --follow-tags
+
+      - name: Read version and check npm
+        id: v
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          if npm view "@simplix-systems/hebrew-date-picker@$VER" version >/dev/null 2>&1; then
+            echo "exists=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish
+        if: steps.v.outputs.exists == 'no' && env.NPM_TOKEN != ''
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
+
+      - name: Summary
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "⚠️ NPM_TOKEN secret is not set — skipped publishing. Add it in Settings → Secrets → Actions." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ steps.v.outputs.exists }}" = "no" ]; then
+            echo "✅ Published @simplix-systems/hebrew-date-picker@${{ steps.v.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ℹ️ Version ${{ steps.v.outputs.version }} is already on npm — nothing to publish." >> "$GITHUB_STEP_SUMMARY"
+          fi
