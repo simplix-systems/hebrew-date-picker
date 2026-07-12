@@ -8,7 +8,19 @@
 
 לוח כפול · חגים · פרשת השבוע · בחירת טווח · קיצורי מקלדת · RTL
 
-[**▶ הדגמה חיה**](https://simplix-systems.github.io/hebrew-date-picker/) · [English 🇬🇧](./README.md) · עובד עם **Vue · Nuxt · React · Svelte · Angular** · ללא תלויות זמן-ריצה
+<p>
+  <a href="https://www.npmjs.com/package/@simplix-systems/hebrew-date-picker"><img alt="npm version" src="https://img.shields.io/npm/v/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130&logo=npm"></a>
+  <a href="https://www.npmjs.com/package/@simplix-systems/hebrew-date-picker"><img alt="downloads" src="https://img.shields.io/npm/dm/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130"></a>
+  <img alt="minzipped size" src="https://img.shields.io/bundlephobia/minzip/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130&label=size">
+  <img alt="zero dependencies" src="https://img.shields.io/badge/dependencies-0-4c5fd8?labelColor=1b2130">
+  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/npm/l/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130"></a>
+</p>
+
+<p>
+  <a href="https://simplix-systems.github.io/hebrew-date-picker/"><b>הדגמה חיה</b></a>
+  &nbsp;·&nbsp; <a href="./README.md">English</a>
+  &nbsp;·&nbsp; Vue &nbsp;·&nbsp; Nuxt &nbsp;·&nbsp; React &nbsp;·&nbsp; Svelte &nbsp;·&nbsp; Angular &nbsp;·&nbsp; Web Component
+</p>
 
 </div>
 
@@ -16,7 +28,7 @@
 
 ---
 
-## ✨ יכולות
+## יכולות
 
 - **שני לוחות באחד** — מעבר בלחיצה בין תצוגה עברית (`עברי`) ולועזית (`לועזי`).
 - **לוח עברי אמיתי** — שנים וימים בגימטריה (`תשפ״ו`, `ט״ו`), שנים מעוברות (`אדר א׳`/`אדר ב׳`), מבוסס על מנוע ה-`Intl` של הדפדפן/Node — ולכן **בלי תלויות** ובלי טבלאות נתונים לתחזק.
@@ -33,7 +45,7 @@
 - **ניתן לעיצוב** דרך משתני CSS; כולל ערכת נושא כהה.
 - טיפוסי **TypeScript** מלאים.
 
-## 📦 התקנה
+## התקנה
 
 ```bash
 npm install @simplix-systems/hebrew-date-picker
@@ -47,7 +59,7 @@ import '@simplix-systems/hebrew-date-picker/style.css';
 
 ---
 
-## 🚀 התחלה מהירה
+## התחלה מהירה
 
 ### Vue 3 / Nuxt 3
 
@@ -66,7 +78,7 @@ const date = ref('2026-06-16'); // ISO "YYYY-MM-DD"
 ```
 
 > **ב-Nuxt:** הרכיב רץ בצד-לקוח בלבד. עוטפים ב-`<ClientOnly>` או רושמים אותו
-> בפלאגין `~/plugins/hebrew-datepicker.client.ts` (ראו [הגדרות גלובליות](#️-הגדרות-גלובליות)).
+> בפלאגין `~/plugins/hebrew-datepicker.client.ts` (ראו [הגדרות גלובליות](#הגדרות-גלובליות)).
 
 ### React
 
@@ -156,7 +168,7 @@ input.addEventListener('click', () => {
 
 ---
 
-## ⚙️ אפשרויות / דגלים
+## אפשרויות / דגלים
 
 כל אפשרות עובדת גם כ-prop (Vue/React/Svelte/Angular) וגם כאופציה ל-`DatePicker`.
 
@@ -222,7 +234,7 @@ input.addEventListener('click', () => {
 
 ---
 
-## ⌨️ קיצורי מקלדת
+## קיצורי מקלדת
 
 | מקש | רשת ימים | רשת חודשים | רשת שנים |
 | --- | --- | --- | --- |
@@ -239,7 +251,7 @@ input.addEventListener('click', () => {
 
 ---
 
-## 🛠️ הגדרות גלובליות
+## הגדרות גלובליות
 
 מגדירים ברירות מחדל פעם אחת וכל בורר יורש אותן. props ברמת המופע תמיד גוברים.
 
@@ -279,7 +291,7 @@ export default defineNuxtPlugin(() => {
 
 ---
 
-## 🎨 עיצוב (Theming)
+## עיצוב (Theming)
 
 דורסים כל משתנה CSS על שורש `.hdp`, או מוסיפים את המחלקה `hdp-dark`.
 
@@ -305,7 +317,7 @@ export default defineNuxtPlugin(() => {
 
 ---
 
-## 💡 שימושים (Use cases)
+## שימושים (Use cases)
 
 - **טפסים בתאריך עברי** — יארצייטים, ברית/בר-מצווה, ימי שנה לפי תאריך עברי.
 - **אפליקציות קהילה/בית כנסת** — להציג פרשה וחגים ישירות בבורר.
@@ -316,7 +328,7 @@ export default defineNuxtPlugin(() => {
 
 ---
 
-## 🧠 שימוש ישיר במנוע הלוח
+## שימוש ישיר במנוע הלוח
 
 הליבה מייצאת את פונקציות הלוח, נוח לבניית ממשקים מותאמים:
 
@@ -334,11 +346,11 @@ getParasha(new Date('2026-06-13'));    // פרשת השבוע לאותה שבת 
 
 ---
 
-## 📅 הערה על דיוק
+## הערה על דיוק
 
 הלוח העברי מחושב ממנוע ה-`Intl` של הסביבה, כך שההמרות תואמות את נתוני ה-Unicode של הסביבה. לוגיקת החגים והפרשות נוהגת כברירת מחדל כמנהג **ארץ ישראל** (יום-טוב אחד; שמיני עצרת = שמחת תורה בכ״ב תשרי). עם `diaspora: true` מתקבל מחזור חו״ל (2 ימים טובים ופרשיות חו״ל). החבילה כוללת בדיקות (`npm test`) המאמתות המרות הלוך-ושוב, שנים מעוברות, ושיבוץ פרשות לאורך שנים רבות.
 
-## 📄 רישיון
+## רישיון
 
 MIT © Eli
 

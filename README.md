@@ -8,13 +8,25 @@
 
 Dual calendar · Holidays · Parashat HaShavua · Range selection · Keyboard shortcuts · RTL
 
-[**▶ Live demo**](https://simplix-systems.github.io/hebrew-date-picker/) · [עברית 🇮🇱](./README.he.md) · Works with **Vue · Nuxt · React · Svelte · Angular** · Zero runtime dependencies
+<p>
+  <a href="https://www.npmjs.com/package/@simplix-systems/hebrew-date-picker"><img alt="npm version" src="https://img.shields.io/npm/v/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130&logo=npm"></a>
+  <a href="https://www.npmjs.com/package/@simplix-systems/hebrew-date-picker"><img alt="downloads" src="https://img.shields.io/npm/dm/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130"></a>
+  <img alt="minzipped size" src="https://img.shields.io/bundlephobia/minzip/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130&label=size">
+  <img alt="zero dependencies" src="https://img.shields.io/badge/dependencies-0-4c5fd8?labelColor=1b2130">
+  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/npm/l/@simplix-systems/hebrew-date-picker?color=4c5fd8&labelColor=1b2130"></a>
+</p>
+
+<p>
+  <a href="https://simplix-systems.github.io/hebrew-date-picker/"><b>Live demo</b></a>
+  &nbsp;·&nbsp; <a href="./README.he.md">עברית</a>
+  &nbsp;·&nbsp; Vue &nbsp;·&nbsp; Nuxt &nbsp;·&nbsp; React &nbsp;·&nbsp; Svelte &nbsp;·&nbsp; Angular &nbsp;·&nbsp; Web Component
+</p>
 
 </div>
 
 ---
 
-## ✨ Features
+## Features
 
 - **Two calendars in one** — switch between a Hebrew (`עברי`) and Gregorian (`לועזי`) view with a tab.
 - **Real Hebrew calendar** — gematria years and days (`תשפ״ו`, `ט״ו`), leap years (`אדר א׳`/`אדר ב׳`), built on the platform `Intl` engine, so there are **no runtime dependencies** and no data tables to keep up to date.
@@ -31,7 +43,7 @@ Dual calendar · Holidays · Parashat HaShavua · Range selection · Keyboard sh
 - **Themeable** via CSS variables; ships with a dark theme.
 - **TypeScript** types for everything.
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install @simplix-systems/hebrew-date-picker
@@ -45,7 +57,7 @@ import '@simplix-systems/hebrew-date-picker/style.css';
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
 ### Vue 3 / Nuxt 3
 
@@ -65,7 +77,7 @@ const date = ref('2026-06-16'); // ISO "YYYY-MM-DD"
 
 > **Nuxt:** the component is browser-only. Either wrap it in `<ClientOnly>` or
 > register it in a `~/plugins/hebrew-datepicker.client.ts` plugin (see
-> [Global configuration](#-global-configuration)).
+> [Global configuration](#global-configuration)).
 
 ### React
 
@@ -155,7 +167,7 @@ input.addEventListener('click', () => {
 
 ---
 
-## ⚙️ Options / flags
+## Options / flags
 
 Every option works as a prop (Vue/React/Svelte/Angular) and as a `DatePicker` constructor option.
 
@@ -222,7 +234,7 @@ for Hebrew).
 
 ---
 
-## ⌨️ Keyboard shortcuts
+## Keyboard shortcuts
 
 | Key | Day grid | Month grid | Year grid |
 | --- | --- | --- | --- |
@@ -239,7 +251,7 @@ Hover any navigation arrow, month pill or year pill to see a tooltip naming the 
 
 ---
 
-## 🛠️ Global configuration
+## Global configuration
 
 Set defaults once and every picker inherits them. Per-instance props always win.
 
@@ -279,7 +291,7 @@ export default defineNuxtPlugin(() => {
 
 ---
 
-## 🎨 Theming
+## Theming
 
 Override any CSS variable on the `.hdp` root, or add the `hdp-dark` class.
 
@@ -305,7 +317,7 @@ Override any CSS variable on the `.hdp` root, or add the `hdp-dark` class.
 
 ---
 
-## 💡 Use cases
+## Use cases
 
 - **Hebrew-date forms** — yahrzeits, brit/bar-mitzvah dates, anniversaries by Hebrew date.
 - **Shul / community apps** — show the parasha and holidays right in the picker.
@@ -316,7 +328,7 @@ Override any CSS variable on the `.hdp` root, or add the `hdp-dark` class.
 
 ---
 
-## 🧠 Using the calendar engine directly
+## Using the calendar engine directly
 
 The core exports the calendar primitives, handy for building custom UIs:
 
@@ -334,10 +346,10 @@ getParasha(new Date('2026-06-13'));    // weekly portion for that Shabbat (or nu
 
 ---
 
-## 📅 A note on accuracy
+## A note on accuracy
 
 The Hebrew calendar is computed from the platform `Intl` Hebrew calendar, so conversions match the host environment's Unicode data. Holiday and Parashat logic defaults to the **Eretz Yisrael** custom (single-day Yom Tov; Shmini Atzeret = Simchat Torah on 22 Tishri). Set `diaspora: true` for the two-day Yom Tov / Diaspora parashot cycle. The package ships with a test suite (`npm test`) that verifies round-trip conversions, leap-year handling and Parashat assignment across many years.
 
-## 📄 License
+## License
 
 MIT © Eli
