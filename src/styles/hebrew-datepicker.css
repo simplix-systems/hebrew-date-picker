@@ -470,7 +470,7 @@
 }
 .hdp-input {
   font: inherit; width: 100%; box-sizing: border-box;
-  padding: 9px 12px; padding-inline-start: 38px; cursor: pointer;
+  padding: 9px 12px; padding-inline-start: 38px; padding-inline-end: 34px; cursor: pointer;
   border: 1px solid var(--hdp-border, #d1d5db);
   border-radius: var(--hdp-radius-sm, 8px);
   background: var(--hdp-bg, #ffffff);
@@ -482,3 +482,13 @@
   outline: none; border-color: var(--hdp-primary, #4c5fd8);
   box-shadow: 0 0 0 3px var(--hdp-primary-soft, rgba(76, 95, 216, 0.15));
 }
+/* clear (×) button — sits on the trailing edge, shown only when there's a value */
+.hdp-field .hdp-clear {
+  position: absolute; inset-inline-end: 8px; top: 50%; transform: translateY(-50%);
+  display: none; align-items: center; justify-content: center;
+  width: 20px; height: 20px; padding: 0; border: none; border-radius: 50%;
+  background: var(--hdp-border, #e5e7eb); color: var(--hdp-text, #374151);
+  font-size: 15px; line-height: 1; cursor: pointer;
+}
+.hdp-field .hdp-clear.is-shown { display: inline-flex; }
+.hdp-field .hdp-clear:hover { background: var(--hdp-muted, #9ca3af); color: #fff; }

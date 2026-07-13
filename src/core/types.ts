@@ -176,6 +176,9 @@ export interface PickerOptions {
   compact?: boolean;
   /** Close the popup when a day is picked. Default true (ignored when `time` is on — then the OK button confirms). */
   closeOnSelect?: boolean;
+  /** Input-field layer only (DateInput / wrappers): does clicking the input open the
+   * picker? Honored for a Gregorian display (Hebrew always opens). Default true. */
+  openOnInputClick?: boolean;
   /** Override any visible label. */
   labels?: Partial<PickerLabels>;
   /** Called whenever a value is committed. */

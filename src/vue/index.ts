@@ -1,7 +1,8 @@
 // Vue 3 wrapper (works in Nuxt 3 — import client-side or via a plugin).
 import { defineComponent, h, ref, onMounted, onBeforeUnmount, watch, type PropType } from 'vue';
 import { DatePicker } from '../core/picker';
-import { buildOptions, formatDisplay, openPopup, resolveDisplayCalendar, type WrapperValue } from '../shared/bind';
+import { DateInput } from '../core/date-input';
+import type { WrapperValue } from '../shared/bind';
 import type {
   CalendarType,
   SelectionMode,
@@ -9,6 +10,7 @@ import type {
   Theme,
   PickerResult,
   PickerLabels,
+  PickerOptions,
   ISODate
 } from '../core/types';
 
@@ -28,6 +30,8 @@ export const HebrewDatePicker = defineComponent({
     diaspora: { type: Boolean, default: undefined },
     displayCalendar: { type: String as PropType<CalendarType>, default: undefined },
     time: { type: Boolean, default: undefined },
+    seconds: { type: Boolean, default: undefined },
+    openOnInputClick: { type: Boolean, default: undefined },
     timeFormat: { type: String as PropType<'12' | '24'>, default: undefined },
     timeStyle: { type: String as PropType<'native' | 'dropdown' | 'stepper' | 'clock' | 'normal' | 'mobile'>, default: undefined },
     primaryColor: { type: String, default: undefined },
@@ -42,11 +46,12 @@ export const HebrewDatePicker = defineComponent({
   emits: ['update:modelValue', 'change'],
   setup(props, { emit }) {
     const hostRef = ref<HTMLElement | null>(null);
-    const inputRef = ref<HTMLInputElement | null>(null);
-    let inline: DatePicker | null = null;
-    let popup: DatePicker | null = null;
+    let picker: DatePicker | null = null;
+    let field: DateInput | null = null;
 
-    const optionProps = () => ({
+    // Structural options — everything EXCEPT the value (so a value change updates
+    // in place instead of rebuilding, which would drop focus mid-typing).
+    const structural = (): PickerOptions => ({
       calendar: props.calendar,
       mode: props.mode,
       precision: props.precision,
@@ -57,7 +62,10 @@ export const HebrewDatePicker = defineComponent({
       showParasha: props.showParasha,
       showTooltips: props.showTooltips,
       diaspora: props.diaspora,
+      displayCalendar: props.displayCalendar,
+      openOnInputClick: props.openOnInputClick,
       time: props.time,
+      seconds: props.seconds,
       timeFormat: props.timeFormat,
       timeStyle: props.timeStyle,
       primaryColor: props.primaryColor,
@@ -65,8 +73,7 @@ export const HebrewDatePicker = defineComponent({
       size: props.size,
       compact: props.compact,
       closeOnSelect: props.closeOnSelect,
-      labels: props.labels,
-      value: props.modelValue
+      labels: props.labels
     });
 
     const onSelect = (r: PickerResult) => {
@@ -75,54 +82,29 @@ export const HebrewDatePicker = defineComponent({
       emit('change', r);
     };
 
-    const mountInline = () => {
+    const build = () => {
       if (!hostRef.value) return;
-      inline?.destroy();
-      inline = new DatePicker({ ...buildOptions(optionProps(), onSelect), inline: true }).mount(hostRef.value);
+      picker?.destroy(); picker = null;
+      field?.destroy(); field = null;
+      const opts = { ...structural(), value: props.modelValue, onSelect };
+      if (props.inline) {
+        picker = new DatePicker({ ...opts, inline: true }).mount(hostRef.value);
+      } else {
+        field = new DateInput({ ...opts, placeholder: props.placeholder }).mount(hostRef.value);
+      }
     };
 
-    onMounted(() => {
-      if (props.inline) mountInline();
+    onMounted(build);
+    onBeforeUnmount(() => { picker?.destroy(); field?.destroy(); });
+    // Rebuild only on structural / mode changes.
+    watch(() => JSON.stringify([props.inline, structural(), props.placeholder]), build);
+    // Value changes update in place.
+    watch(() => props.modelValue, (v) => {
+      if (props.inline) picker?.setValue(v ?? null);
+      else field?.setValue(v ?? null);
     });
-    onBeforeUnmount(() => {
-      inline?.destroy();
-      popup?.close();
-    });
-    watch(
-      () => JSON.stringify(optionProps()),
-      () => { if (props.inline) mountInline(); }
-    );
 
-    const displayText = () =>
-      formatDisplay(props.modelValue, resolveDisplayCalendar(props), props.mode) || props.placeholder;
-
-    const openPicker = () => {
-      if (!inputRef.value) return;
-      popup?.close();
-      popup = openPopup(inputRef.value, { ...buildOptions(optionProps(), onSelect) });
-    };
-
-    return () =>
-      props.inline
-        ? h('div', { ref: hostRef, class: 'hdp-host' })
-        : h('span', { class: 'hdp-field', onClick: openPicker }, [
-            h('svg', {
-              class: 'hdp-cal-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
-              'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true'
-            }, [
-              h('rect', { x: '3', y: '4', width: '18', height: '18', rx: '2' }),
-              h('path', { d: 'M16 2v4M8 2v4M3 10h18' })
-            ]),
-            h('input', {
-              ref: inputRef,
-              class: 'hdp-input',
-              readonly: true,
-              value: displayText(),
-              placeholder: props.placeholder,
-              onClick: openPicker,
-              onFocus: openPicker
-            })
-          ]);
+    return () => h('div', { ref: hostRef, class: props.inline ? 'hdp-host' : 'hdp-input-host' });
   }
 });
 

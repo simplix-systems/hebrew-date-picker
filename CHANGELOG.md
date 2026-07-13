@@ -6,19 +6,27 @@ This project follows [Semantic Versioning](https://semver.org/) and the
 
 ## Unreleased
 
+### Added
+- **`DateInput`** — a framework-agnostic input field that opens the picker as a
+  popup: calendar icon, clear (×) button, and — for a Gregorian day in single
+  mode — inline **masked typing** (`DD/MM/YYYY`) forced to `dir="ltr"` so the mask
+  reads correctly inside an RTL page. Paste a Gregorian date in any display and it
+  parses. All wrappers mount it in input mode. Exported for direct use.
+- **`openOnInputClick`** option — whether clicking the input opens the picker
+  (Gregorian display only; Hebrew always opens). `false` = open via the icon.
+- **`placeholder`** on the input.
+
 ### Fixed
 - **Missing input border (framework wrappers).** `.hdp-input` is rendered
   *outside* the `.hdp` panel, where the `--hdp-*` variables aren't in scope; the
   `var()` calls had no fallback, so the `border`/`background` shorthands became
-  invalid and the border disappeared. Every property now carries a fallback, so
-  the input renders correctly anywhere.
+  invalid and the border disappeared. Every property now carries a fallback.
 
 ### Changed (breaking)
-- **Wrappers now default to an input + popup** (with a calendar icon) instead of
-  an inline calendar: the `inline` prop defaults to `false` in the Vue, React,
+- **Wrappers now default to an input + popup** (icon + clear + masked typing)
+  instead of an inline calendar: `inline` defaults to `false` in the Vue, React,
   Svelte and Angular wrappers. Clicking the input **or the calendar icon** opens
-  the picker. Pass `inline` (or `:inline="true"` / `[inline]="true"`) for the old
-  inline-calendar behaviour.
+  the picker. Pass `inline` for the old inline-calendar behaviour.
 
 ## [1.11.0] — 2026-06-22
 

@@ -1,5 +1,7 @@
 // hebrew-datepicker — framework-agnostic core entry point.
 export { DatePicker } from './picker';
+export { DateInput } from './date-input';
+export type { DateInputOptions } from './date-input';
 export { CalendarView } from './calendar-view';
 export {
   setGlobalConfig,
