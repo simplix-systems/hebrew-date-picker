@@ -19,7 +19,7 @@ export const HebrewDatePicker = defineComponent({
     calendar: { type: String as PropType<CalendarType>, default: undefined },
     mode: { type: String as PropType<SelectionMode>, default: 'single' },
     precision: { type: String as PropType<Precision>, default: 'day' },
-    inline: { type: Boolean, default: true },
+    inline: { type: Boolean, default: false },
     min: { type: String as PropType<ISODate>, default: null },
     max: { type: String as PropType<ISODate>, default: null },
     highlightShabbat: { type: Boolean, default: undefined },
@@ -105,15 +105,24 @@ export const HebrewDatePicker = defineComponent({
     return () =>
       props.inline
         ? h('div', { ref: hostRef, class: 'hdp-host' })
-        : h('input', {
-            ref: inputRef,
-            class: 'hdp-input',
-            readonly: true,
-            value: displayText(),
-            placeholder: props.placeholder,
-            onClick: openPicker,
-            onFocus: openPicker
-          });
+        : h('span', { class: 'hdp-field', onClick: openPicker }, [
+            h('svg', {
+              class: 'hdp-cal-icon', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+              'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true'
+            }, [
+              h('rect', { x: '3', y: '4', width: '18', height: '18', rx: '2' }),
+              h('path', { d: 'M16 2v4M8 2v4M3 10h18' })
+            ]),
+            h('input', {
+              ref: inputRef,
+              class: 'hdp-input',
+              readonly: true,
+              value: displayText(),
+              placeholder: props.placeholder,
+              onClick: openPicker,
+              onFocus: openPicker
+            })
+          ]);
   }
 });
 

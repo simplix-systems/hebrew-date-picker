@@ -12,11 +12,14 @@ import {
   AfterViewInit,
   ViewChild,
   forwardRef,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
 } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
 import { DatePicker } from '../core/picker';
-import { buildOptions, openPopup, type WrapperValue } from '../shared/bind';
+import { getGlobalConfig } from '../core/config';
+import { buildOptions, openPopup, formatDisplay, type WrapperValue } from '../shared/bind';
 import type {
   CalendarType,
   SelectionMode,
@@ -30,8 +33,17 @@ import type {
 @Component({
   selector: 'hebrew-date-picker',
   standalone: true,
+  imports: [NgIf],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<div #host class="hdp-host"></div>`,
+  template: `
+    <div *ngIf="inline" #host class="hdp-host"></div>
+    <span *ngIf="!inline" class="hdp-field" (click)="open()">
+      <svg class="hdp-cal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+      </svg>
+      <input #inputEl class="hdp-input" readonly [value]="displayText()" [placeholder]="placeholder" (click)="open()" (focus)="open()" />
+    </span>
+  `,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -43,13 +55,16 @@ import type {
 export class HebrewDatePickerComponent
   implements AfterViewInit, OnChanges, OnDestroy, ControlValueAccessor
 {
-  @ViewChild('host', { static: true }) host!: ElementRef<HTMLElement>;
+  @ViewChild('host') host?: ElementRef<HTMLElement>;
+  @ViewChild('inputEl') inputEl?: ElementRef<HTMLInputElement>;
 
   @Input() value: WrapperValue = null;
   @Input() calendar?: CalendarType;
   @Input() mode: SelectionMode = 'single';
   @Input() precision: Precision = 'day';
-  @Input() inline = true;
+  @Input() inline = false;
+  @Input() displayCalendar?: CalendarType;
+  @Input() placeholder = '';
   @Input() min: ISODate | null = null;
   @Input() max: ISODate | null = null;
   @Input() highlightShabbat?: boolean;
@@ -74,6 +89,21 @@ export class HebrewDatePickerComponent
   private onCVAChange: (v: WrapperValue) => void = () => {};
   private onTouched: () => void = () => {};
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  /** Text shown in the input (popup mode), in the display calendar. */
+  displayText(): string {
+    const cal = this.displayCalendar ?? getGlobalConfig().displayCalendar;
+    return formatDisplay(this.value, cal, this.mode) || '';
+  }
+
+  /** Open the popup, anchored to the input. */
+  open(): void {
+    if (!this.inputEl) return;
+    this.picker?.close();
+    this.picker = openPopup(this.inputEl.nativeElement, buildOptions(this.opts(), (r) => this.emit(r)));
+  }
+
   ngAfterViewInit(): void {
     if (this.inline) this.render();
   }
@@ -90,6 +120,7 @@ export class HebrewDatePickerComponent
   writeValue(v: WrapperValue): void {
     this.value = v;
     if (this.inline && this.host) this.render();
+    else this.cdr.markForCheck(); // refresh the input text (popup mode, OnPush)
   }
   registerOnChange(fn: (v: WrapperValue) => void): void { this.onCVAChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
@@ -132,9 +163,11 @@ export class HebrewDatePickerComponent
     this.change.emit(r);
     this.onCVAChange(v);
     this.onTouched();
+    this.cdr.markForCheck(); // refresh the input text under OnPush
   }
 
   private render(): void {
+    if (!this.host) return;
     this.picker?.destroy();
     this.picker = new DatePicker({
       ...buildOptions(this.opts(), (r) => this.emit(r)),

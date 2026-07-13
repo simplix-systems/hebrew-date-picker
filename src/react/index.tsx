@@ -41,7 +41,7 @@ export interface HebrewDatePickerProps {
 }
 
 export function HebrewDatePicker(props: HebrewDatePickerProps) {
-  const { value = null, onChange, inline = true, placeholder = '', className } = props;
+  const { value = null, onChange, inline = false, placeholder = '', className } = props;
   const hostRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pickerRef = useRef<DatePicker | null>(null);
@@ -101,16 +101,37 @@ export function HebrewDatePicker(props: HebrewDatePickerProps) {
     pickerRef.current = openPopup(inputRef.current, buildOptions(options(), handleSelect));
   };
 
+  // Custom className opts out of the built-in field chrome (icon + border).
+  if (className) {
+    return (
+      <input
+        ref={inputRef}
+        className={className}
+        readOnly
+        value={formatDisplay(value, resolveDisplayCalendar(props), props.mode) || ''}
+        placeholder={placeholder}
+        onClick={open}
+        onFocus={open}
+      />
+    );
+  }
+
   return (
-    <input
-      ref={inputRef}
-      className={className ?? 'hdp-input'}
-      readOnly
-      value={formatDisplay(value, resolveDisplayCalendar(props), props.mode) || ''}
-      placeholder={placeholder}
-      onClick={open}
-      onFocus={open}
-    />
+    <span className="hdp-field" onClick={open}>
+      <svg className="hdp-cal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
+      </svg>
+      <input
+        ref={inputRef}
+        className="hdp-input"
+        readOnly
+        value={formatDisplay(value, resolveDisplayCalendar(props), props.mode) || ''}
+        placeholder={placeholder}
+        onClick={open}
+        onFocus={open}
+      />
+    </span>
   );
 }
 

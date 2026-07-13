@@ -458,8 +458,27 @@
   .hdp.hdp-theme-auto .hdp-actions { background: #151a26; }
 }
 
-/* input field used by the framework wrappers (popup mode) */
+/* Input field rendered by the framework wrappers (popup mode).
+   IMPORTANT: this element lives OUTSIDE .hdp, so the --hdp-* variables aren't in
+   scope here — every var() MUST carry a fallback, otherwise the `border`/`background`
+   shorthands become invalid and the border disappears entirely. */
+.hdp-field { position: relative; display: inline-flex; width: 100%; }
+.hdp-field .hdp-cal-icon {
+  position: absolute; inset-inline-start: 11px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; color: var(--hdp-muted, #6b7280);
+  pointer-events: none; opacity: 0.8;
+}
 .hdp-input {
-  font: inherit; padding: 9px 12px; border: 1px solid var(--hdp-border);
-  border-radius: var(--hdp-radius-sm); background: var(--hdp-bg); color: var(--hdp-text); width: 100%;
+  font: inherit; width: 100%; box-sizing: border-box;
+  padding: 9px 12px; padding-inline-start: 38px; cursor: pointer;
+  border: 1px solid var(--hdp-border, #d1d5db);
+  border-radius: var(--hdp-radius-sm, 8px);
+  background: var(--hdp-bg, #ffffff);
+  color: var(--hdp-text, #111827);
+}
+.hdp-input::placeholder { color: var(--hdp-muted, #9ca3af); }
+.hdp-input:hover { border-color: var(--hdp-muted, #9ca3af); }
+.hdp-input:focus {
+  outline: none; border-color: var(--hdp-primary, #4c5fd8);
+  box-shadow: 0 0 0 3px var(--hdp-primary-soft, rgba(76, 95, 216, 0.15));
 }

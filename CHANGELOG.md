@@ -4,6 +4,22 @@ All notable changes to **hebrew-datepicker** are documented here.
 This project follows [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
+## Unreleased
+
+### Fixed
+- **Missing input border (framework wrappers).** `.hdp-input` is rendered
+  *outside* the `.hdp` panel, where the `--hdp-*` variables aren't in scope; the
+  `var()` calls had no fallback, so the `border`/`background` shorthands became
+  invalid and the border disappeared. Every property now carries a fallback, so
+  the input renders correctly anywhere.
+
+### Changed (breaking)
+- **Wrappers now default to an input + popup** (with a calendar icon) instead of
+  an inline calendar: the `inline` prop defaults to `false` in the Vue, React,
+  Svelte and Angular wrappers. Clicking the input **or the calendar icon** opens
+  the picker. Pass `inline` (or `:inline="true"` / `[inline]="true"`) for the old
+  inline-calendar behaviour.
+
 ## [1.11.0] — 2026-06-22
 
 ### Added
