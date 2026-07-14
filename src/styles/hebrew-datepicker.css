@@ -146,7 +146,7 @@
 .hdp-cell.is-today { border-color: var(--hdp-today); }
 .hdp-cell.is-selected { background: var(--hdp-primary); color: var(--hdp-on-primary); border-color: var(--hdp-primary); }
 .hdp-cell.is-selected .hdp-num, .hdp-cell.is-selected .hdp-gem-sm { color: color-mix(in srgb, var(--hdp-on-primary) 75%, transparent); }
-.hdp-cell.is-disabled { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
+.hdp-cell.is-disabled { opacity: 0.35; cursor: not-allowed; }
 /* days that belong to the previous / next month (outsideDays) — greyed, still selectable */
 .hdp-cell.is-outside { background: transparent; }
 .hdp-cell.is-outside .hdp-gem,
