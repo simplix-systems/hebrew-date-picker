@@ -28,6 +28,7 @@
   export let compact = undefined;
   export let closeOnSelect = undefined;
   export let showTooltips = undefined;
+  export let presets = undefined;
   export let labels = undefined;
 
   const dispatch = createEventDispatcher();
@@ -41,7 +42,7 @@
     return {
       calendar, mode, precision, min, max, highlightShabbat, highlightHolidays, showParasha,
       showTooltips, diaspora, displayCalendar, openOnInputClick, time, seconds, timeFormat,
-      timeStyle, primaryColor, theme, size, compact, closeOnSelect, labels
+      timeStyle, primaryColor, theme, size, compact, closeOnSelect, presets, labels
     };
   }
 

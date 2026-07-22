@@ -11,6 +11,7 @@ import type {
   PickerResult,
   PickerLabels,
   PickerOptions,
+  RangePreset,
   ISODate
 } from '../core/types';
 
@@ -40,6 +41,7 @@ export const HebrewDatePicker = defineComponent({
     compact: { type: Boolean, default: undefined },
     closeOnSelect: { type: Boolean, default: undefined },
     showTooltips: { type: Boolean, default: undefined },
+    presets: { type: [Boolean, Array] as PropType<boolean | RangePreset[]>, default: undefined },
     labels: { type: Object as PropType<Partial<PickerLabels>>, default: undefined },
     placeholder: { type: String, default: '' }
   },
@@ -73,6 +75,7 @@ export const HebrewDatePicker = defineComponent({
       size: props.size,
       compact: props.compact,
       closeOnSelect: props.closeOnSelect,
+      presets: props.presets,
       labels: props.labels
     });
 

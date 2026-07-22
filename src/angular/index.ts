@@ -26,6 +26,7 @@ import type {
   PickerResult,
   PickerLabels,
   PickerOptions,
+  RangePreset,
   ISODate
 } from '../core/types';
 
@@ -73,6 +74,7 @@ export class HebrewDatePickerComponent
   @Input() compact?: boolean;
   @Input() closeOnSelect?: boolean;
   @Input() showTooltips?: boolean;
+  @Input() presets?: boolean | RangePreset[];
   @Input() labels?: Partial<PickerLabels>;
 
   @Output() valueChange = new EventEmitter<WrapperValue>();
@@ -130,6 +132,7 @@ export class HebrewDatePickerComponent
       size: this.size,
       compact: this.compact,
       closeOnSelect: this.closeOnSelect,
+      presets: this.presets,
       labels: this.labels
     };
   }

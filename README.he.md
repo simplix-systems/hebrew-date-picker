@@ -18,6 +18,7 @@
 
 <p>
   <a href="https://simplix-systems.github.io/hebrew-date-picker/"><b>הדגמה חיה</b></a>
+  &nbsp;·&nbsp; <a href="https://stackblitz.com/github/simplix-systems/hebrew-date-picker/tree/main/examples/stackblitz-vue"><b>Vue ב-StackBlitz</b></a>
   &nbsp;·&nbsp; <a href="./README.md">English</a>
   &nbsp;·&nbsp; Vue &nbsp;·&nbsp; Nuxt &nbsp;·&nbsp; React &nbsp;·&nbsp; Svelte &nbsp;·&nbsp; Angular &nbsp;·&nbsp; Web Component
 </p>
@@ -199,6 +200,7 @@ input.addEventListener('click', () => {
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | גודל כללי של הבורר. |
 | `compact` | `boolean` | `false` | תצוגה מינימלית: מסתיר תאריך משני, כותרת משנה ותצוגה מקדימה. |
 | `closeOnSelect` | `boolean` | `true` | סגירת החלונית הקופצת בעת בחירת יום (מתעלם כש-`time` פעיל — אישור דרך הכפתור). |
+| `presets` | `boolean \| RangePreset[]` | `false` | מצב טווח: סרגל טווחים מהירים (היום, אתמול, 7/30 הימים האחרונים, החודש/השנה הזו והקודמים + מותאם אישית). "החודש/השנה הזו" הם חלון מתגלגל — מאותו יום לפני חודש/שנה (עברי או לועזי, לפי הלשונית הפעילה) ועד היום; "החודש/השנה שעברה" הם החודש/השנה הקודמים במלואם (בלשונית העברית: א׳ תשרי → כ״ט אלול). אפשר להעביר מערך `{ label, range }` להתאמה מלאה. |
 | `labels` | `Partial<PickerLabels>` | — | דריסת כל טקסט גלוי (ראו למטה). |
 
 **אירועים / קישור ערך**

@@ -4,11 +4,13 @@ import { CalendarView, removeTip } from './calendar-view';
 import { buildClockTime } from './time-clock';
 import { getGlobalConfig, DEFAULT_LABELS_EN } from './config';
 import { toISO, compareISO } from './dates';
+import { gregToHebParts, getMonthsForYear, hebToGreg } from './hebrew';
 import type {
   CalendarType,
   PickerOptions,
   PickerLabels,
   PickerResult,
+  RangePreset,
   ISODate,
   SelectionMode,
   Precision,
@@ -43,6 +45,7 @@ interface Resolved {
   size: PickerSize;
   compact: boolean;
   closeOnSelect: boolean;
+  presets: boolean | RangePreset[];
   labels: PickerLabels;
   locale: string;
   onSelect?: (r: PickerResult) => void;
@@ -87,6 +90,8 @@ export class DatePicker {
   private originalValue: PickerOptions['value'];
   /** Which range column the user last interacted with ('start' = leading, 'end' = trailing). */
   private lastFocusedCol: 'start' | 'end' = 'start';
+  /** The quick-range presets sidebar (range mode, `presets` option). */
+  private presetsEl: HTMLElement | null = null;
 
   constructor(options: PickerOptions = {}) {
     const g = getGlobalConfig();
@@ -122,6 +127,7 @@ export class DatePicker {
       size: options.size ?? g.size,
       compact: options.compact ?? g.compact,
       closeOnSelect: options.closeOnSelect ?? g.closeOnSelect,
+      presets: options.presets ?? false,
       labels: { ...baseLabels, ...(options.labels || {}) },
       locale: isEn ? 'en-US' : g.locale,
       onSelect: options.onSelect,
@@ -349,7 +355,9 @@ export class DatePicker {
     body.className = 'hdp-body' + (this.opt.mode === 'range' ? ' hdp-range' : '');
     this.panel.appendChild(body);
 
+    this.presetsEl = null;
     if (this.opt.mode === 'range') {
+      if (this.opt.presets) body.appendChild(this.buildPresets());
       body.appendChild(this.buildRangeColumn('start'));
       body.appendChild(this.buildRangeColumn('end'));
     } else {
@@ -378,6 +386,80 @@ export class DatePicker {
     }
 
     this.panel.appendChild(this.buildActions());
+  }
+
+  // ===== Quick-range presets (range mode) =====
+
+  /** Resolve the preset list (custom array or the built-ins) to static ranges,
+   * evaluated against the ACTIVE calendar tab. */
+  private resolvedPresets(): Array<{ label: string; start: ISODate; end: ISODate }> {
+    const list: RangePreset[] = Array.isArray(this.opt.presets)
+      ? this.opt.presets
+      : builtinPresets(this.opt.labels);
+    return list.map((p) => {
+      const r = typeof p.range === 'function' ? p.range(this.type) : p.range;
+      return { label: p.label, start: r.start, end: r.end };
+    });
+  }
+
+  private buildPresets(): HTMLElement {
+    const wrap = ce('div', 'hdp-presets');
+    this.resolvedPresets().forEach((p) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hdp-preset';
+      b.textContent = p.label;
+      b.dataset.start = p.start;
+      b.dataset.end = p.end;
+      if (this.opt.showTooltips) b.title = `${p.start} ← ${p.end}`;
+      b.onclick = (e) => {
+        e.stopPropagation();
+        this.applyPreset(p.start, p.end);
+      };
+      wrap.appendChild(b);
+    });
+    // Trailing "custom" item: highlighted whenever the current range matches no
+    // preset; clicking it just moves focus to the calendars for a manual pick.
+    const custom = document.createElement('button');
+    custom.type = 'button';
+    custom.className = 'hdp-preset hdp-preset-custom';
+    custom.textContent = this.opt.labels.presetCustom;
+    custom.onclick = (e) => {
+      e.stopPropagation();
+      this.views[0]?.focus();
+    };
+    wrap.appendChild(custom);
+    this.presetsEl = wrap;
+    this.updatePresetActive();
+    return wrap;
+  }
+
+  private applyPreset(start: ISODate, end: ISODate): void {
+    this.startISO = start;
+    this.endISO = end;
+    // Navigate both calendars to the chosen endpoints so the range is visible.
+    this.views[0]?.setValue(start);
+    this.views[this.views.length - 1]?.setValue(end);
+    this.refreshRange();
+    this.emit();
+    if (!this.opt.time && this.opt.closeOnSelect && !this.opt.inline) this.close();
+  }
+
+  /** Highlight the preset matching the committed range (or "custom" when none). */
+  private updatePresetActive(): void {
+    if (!this.presetsEl) return;
+    const complete = !!this.startISO && !!this.endISO;
+    const [a, b] = complete ? this.sortedRange() : ['', ''];
+    let matched = false;
+    this.presetsEl.querySelectorAll<HTMLElement>('.hdp-preset').forEach((item) => {
+      if (item.classList.contains('hdp-preset-custom')) return;
+      const on = complete && item.dataset.start === a && item.dataset.end === b;
+      item.classList.toggle('is-active', on);
+      if (on) matched = true;
+    });
+    this.presetsEl
+      .querySelector('.hdp-preset-custom')
+      ?.classList.toggle('is-active', complete && !matched);
   }
 
   private buildRangeColumn(which: 'start' | 'end'): HTMLElement {
@@ -483,6 +565,7 @@ export class DatePicker {
     const [lo, hi] = this.rangeForDisplay();
     this.views.forEach((v) => v.setRange(lo, hi));
     this.updateRangeHint();
+    this.updatePresetActive();
   }
 
   // Show the prospective range (start → hovered) on BOTH calendars while the
@@ -763,6 +846,130 @@ export class DatePicker {
   protected _origin(): PickerOptions['value'] {
     return this.originalValue;
   }
+}
+
+// ===== Built-in quick-range presets =====
+// Day-based presets (today / yesterday / last N days) are calendar-agnostic.
+// The month & year presets follow the ACTIVE calendar tab:
+//  - "this month" / "this year" are ROLLING windows — from the same day one
+//    month / one year back (Hebrew or civil) up to today;
+//  - "last month" / "last year" are the FULL previous month / year — on the
+//    Hebrew tab "last year" is 1 Tishrei → 29 Elul of the previous Hebrew year.
+
+function startOfToday(): Date {
+  const n = new Date();
+  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+}
+function shiftDays(d: Date, n: number): Date {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+}
+
+/** The same Hebrew month in another year (leap-year Adar I/II fall back to
+ * that year's Adar and vice-versa). */
+function hebMonthInYear(year: number, month: string): { num: string; days: number } {
+  const ms = getMonthsForYear(year);
+  return (
+    ms.find((m) => m.num === month) ||
+    (month.startsWith('Adar') ? ms.find((m) => m.num.startsWith('Adar')) : undefined) ||
+    ms[0]
+  );
+}
+
+/** Today's Hebrew date, one Hebrew year back (day clamped to the month). */
+function hebSameDayLastYear(): Date {
+  const t = startOfToday();
+  const p = gregToHebParts(t);
+  if (p.year - 1 < 1) return t;
+  const m = hebMonthInYear(p.year - 1, p.month);
+  return hebToGreg(p.year - 1, m.num, p.day) || t;
+}
+
+/** Today's Hebrew day-of-month, one Hebrew month back (day clamped). */
+function hebSameDayLastMonth(): Date {
+  const t = startOfToday();
+  const p = gregToHebParts(t);
+  let year = p.year;
+  let ms = getMonthsForYear(year);
+  let idx = ms.findIndex((m) => m.num === p.month);
+  if (idx < 0) idx = 0;
+  idx -= 1;
+  if (idx < 0) {
+    if (year - 1 < 1) return t;
+    year -= 1;
+    ms = getMonthsForYear(year);
+    idx = ms.length - 1;
+  }
+  return hebToGreg(year, ms[idx].num, p.day) || t;
+}
+
+function gregSameDayLastMonth(): Date {
+  const t = startOfToday();
+  const lastD = new Date(t.getFullYear(), t.getMonth(), 0).getDate();
+  return new Date(t.getFullYear(), t.getMonth() - 1, Math.min(t.getDate(), lastD));
+}
+function gregSameDayLastYear(): Date {
+  const t = startOfToday();
+  const y = t.getFullYear() - 1;
+  const lastD = new Date(y, t.getMonth() + 1, 0).getDate();
+  return new Date(y, t.getMonth(), Math.min(t.getDate(), lastD));
+}
+
+/** Full span of the previous Hebrew month. */
+function hebLastMonthSpan(): { start: ISODate; end: ISODate } {
+  const p = gregToHebParts(startOfToday());
+  let year = p.year;
+  let months = getMonthsForYear(year);
+  let idx = months.findIndex((m) => m.num === p.month);
+  if (idx < 0) idx = 0;
+  idx -= 1;
+  if (idx < 0) {
+    year -= 1;
+    months = getMonthsForYear(year);
+    idx = months.length - 1;
+  }
+  const m = months[idx];
+  return { start: toISO(m.firstGreg), end: toISO(shiftDays(m.firstGreg, m.days - 1)) };
+}
+
+/** Full span of the previous Hebrew year (1 Tishrei → 29 Elul). */
+function hebLastYearSpan(): { start: ISODate; end: ISODate } {
+  const year = gregToHebParts(startOfToday()).year - 1;
+  const months = getMonthsForYear(year);
+  const last = months[months.length - 1];
+  return {
+    start: toISO(months[0].firstGreg),
+    end: toISO(shiftDays(last.firstGreg, last.days - 1))
+  };
+}
+
+function gregLastMonthSpan(): { start: ISODate; end: ISODate } {
+  const t = startOfToday();
+  return {
+    start: toISO(new Date(t.getFullYear(), t.getMonth() - 1, 1)),
+    end: toISO(new Date(t.getFullYear(), t.getMonth(), 0))
+  };
+}
+
+function gregLastYearSpan(): { start: ISODate; end: ISODate } {
+  const y = startOfToday().getFullYear() - 1;
+  return { start: toISO(new Date(y, 0, 1)), end: toISO(new Date(y, 11, 31)) };
+}
+
+function builtinPresets(L: PickerLabels): RangePreset[] {
+  const rolling = (start: Date): { start: ISODate; end: ISODate } => ({
+    start: toISO(start),
+    end: toISO(startOfToday())
+  });
+  return [
+    { label: L.presetToday, range: () => { const t = toISO(startOfToday()); return { start: t, end: t }; } },
+    { label: L.presetYesterday, range: () => { const y = toISO(shiftDays(startOfToday(), -1)); return { start: y, end: y }; } },
+    { label: L.presetLast7Days, range: () => rolling(shiftDays(startOfToday(), -6)) },
+    { label: L.presetLast30Days, range: () => rolling(shiftDays(startOfToday(), -29)) },
+    { label: L.presetThisMonth, range: (cal) => rolling(cal === 'hebrew' ? hebSameDayLastMonth() : gregSameDayLastMonth()) },
+    { label: L.presetLastMonth, range: (cal) => (cal === 'hebrew' ? hebLastMonthSpan() : gregLastMonthSpan()) },
+    { label: L.presetThisYear, range: (cal) => rolling(cal === 'hebrew' ? hebSameDayLastYear() : gregSameDayLastYear()) },
+    { label: L.presetLastYear, range: (cal) => (cal === 'hebrew' ? hebLastYearSpan() : gregLastYearSpan()) }
+  ];
 }
 
 function ce(tag: string, cls?: string): HTMLElement {

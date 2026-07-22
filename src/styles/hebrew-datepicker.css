@@ -70,6 +70,35 @@
   text-align: center; padding-bottom: 6px;
 }
 
+/* Quick-range presets sidebar (range mode, `presets` option). Sits on the
+   leading side of the two calendars — right in RTL, left in LTR. */
+.hdp-presets {
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 136px; padding-inline-end: 12px; padding-top: 2px;
+  border-inline-end: 1px solid var(--hdp-border);
+}
+.hdp-preset {
+  text-align: start; background: transparent; border: none;
+  border-radius: var(--hdp-radius-sm); padding: 8px 10px; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 500; color: var(--hdp-text);
+  white-space: nowrap; transition: background 0.12s, color 0.12s;
+}
+.hdp-preset:hover { background: var(--hdp-primary-soft); }
+.hdp-preset.is-active { background: var(--hdp-primary); color: var(--hdp-on-primary); font-weight: 600; }
+/* the trailing "custom" item is informational — muted, softly marked when active */
+.hdp-preset-custom { color: var(--hdp-muted); margin-top: auto; }
+.hdp-preset-custom.is-active { background: var(--hdp-primary-soft); color: var(--hdp-primary); }
+/* stack the sidebar above the calendars on narrow screens */
+@media (max-width: 640px) {
+  .hdp-body.hdp-range { flex-wrap: wrap; }
+  .hdp-presets {
+    flex-direction: row; flex-wrap: wrap; width: 100%; min-width: 0;
+    border-inline-end: none; border-bottom: 1px solid var(--hdp-border);
+    padding-inline-end: 0; padding-bottom: 8px;
+  }
+  .hdp-preset-custom { margin-top: 0; margin-inline-start: auto; }
+}
+
 /* Calendar — a fixed-height flex column so the day / months / years views all
    occupy the SAME height (the popup never jumps when you open the grid). */
 .hdp-cal {
@@ -220,6 +249,9 @@
 }
 .hdp-mycell:hover { background: var(--hdp-primary-soft); border-color: var(--hdp-primary); }
 .hdp-mycell.is-selected { background: var(--hdp-primary); color: var(--hdp-on-primary); border-color: var(--hdp-primary); }
+/* years before the Hebrew epoch (year 1) — dimmed, not selectable */
+.hdp-mycell.is-disabled { opacity: 0.35; cursor: not-allowed; }
+.hdp-mycell.is-disabled:hover { background: var(--hdp-cell-bg); border-color: transparent; }
 .hdp-yearnav { display: flex; align-items: center; gap: 8px; padding: 4px; }
 
 /* styled holiday/parasha tooltip (replaces the native title popup) */

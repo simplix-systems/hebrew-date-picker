@@ -10,6 +10,7 @@ import type {
   Theme,
   PickerResult,
   PickerLabels,
+  RangePreset,
   ISODate
 } from '../core/types';
 
@@ -38,6 +39,8 @@ export interface HebrewDatePickerProps {
   size?: 'sm' | 'md' | 'lg';
   compact?: boolean;
   closeOnSelect?: boolean;
+  /** Range mode: quick-range sidebar (true = built-ins, or a custom list). */
+  presets?: boolean | RangePreset[];
   labels?: Partial<PickerLabels>;
   placeholder?: string;
   className?: string;
@@ -74,6 +77,7 @@ export function HebrewDatePicker(props: HebrewDatePickerProps) {
     size: props.size,
     compact: props.compact,
     closeOnSelect: props.closeOnSelect,
+    presets: props.presets,
     labels: props.labels
   });
   const sig = JSON.stringify(structural());

@@ -18,6 +18,7 @@ Dual calendar · Holidays · Parashat HaShavua · Range selection · Keyboard sh
 
 <p>
   <a href="https://simplix-systems.github.io/hebrew-date-picker/"><b>Live demo</b></a>
+  &nbsp;·&nbsp; <a href="https://stackblitz.com/github/simplix-systems/hebrew-date-picker/tree/main/examples/stackblitz-vue"><b>Vue on StackBlitz</b></a>
   &nbsp;·&nbsp; <a href="./README.he.md">עברית</a>
   &nbsp;·&nbsp; Vue &nbsp;·&nbsp; Nuxt &nbsp;·&nbsp; React &nbsp;·&nbsp; Svelte &nbsp;·&nbsp; Angular &nbsp;·&nbsp; Web Component
 </p>
@@ -198,6 +199,7 @@ Every option works as a prop (Vue/React/Svelte/Angular) and as a `DatePicker` co
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Overall picker size. |
 | `compact` | `boolean` | `false` | Minimal layout: hides the secondary date, subtitle and preview. |
 | `closeOnSelect` | `boolean` | `true` | Close the popup when a day is picked (ignored when `time` is on — confirm with OK). |
+| `presets` | `boolean \| RangePreset[]` | `false` | Range mode: quick-range sidebar (today, yesterday, last 7/30 days, this/last month, this/last year + custom). "This month/year" are rolling windows — same day one Hebrew/civil month/year back → today; "last month/year" are the full previous month/year (on the Hebrew tab: 1 Tishrei → 29 Elul). Pass an array of `{ label, range }` to customize. |
 | `labels` | `Partial<PickerLabels>` | — | Override any visible text (see below). |
 
 **Events / binding**

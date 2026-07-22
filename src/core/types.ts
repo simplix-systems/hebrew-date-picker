@@ -83,6 +83,20 @@ export interface RangeResult {
 
 export type PickerResult = SingleResult | RangeResult;
 
+/** A quick-range preset shown in the range-mode sidebar (`presets` option). */
+export interface RangePreset {
+  /** Visible label of the preset item. */
+  label: string;
+  /**
+   * The range this preset applies. Either a static {start, end} pair, or a
+   * function of the ACTIVE calendar tab — so "this year" can mean the Hebrew
+   * year on the Hebrew tab and the civil year on the Gregorian tab.
+   */
+  range:
+    | { start: ISODate; end: ISODate }
+    | ((calendar: CalendarType) => { start: ISODate; end: ISODate });
+}
+
 /** Labels — every visible string can be overridden. */
 export interface PickerLabels {
   gregorianTab: string;
@@ -104,6 +118,16 @@ export interface PickerLabels {
   jumpNextYear: string;
   hebrewPreview: string;
   gregorianPreview: string;
+  /** Quick-range preset labels (range-mode sidebar, `presets` option). */
+  presetToday: string;
+  presetYesterday: string;
+  presetLast7Days: string;
+  presetLast30Days: string;
+  presetThisMonth: string;
+  presetLastMonth: string;
+  presetThisYear: string;
+  presetLastYear: string;
+  presetCustom: string;
   weekdays: string[]; // length 7, Sunday-first
 }
 
@@ -176,6 +200,14 @@ export interface PickerOptions {
   compact?: boolean;
   /** Close the popup when a day is picked. Default true (ignored when `time` is on — then the OK button confirms). */
   closeOnSelect?: boolean;
+  /**
+   * Range mode only: show a quick-range sidebar (today, yesterday, last 7 days,
+   * this month, this year, …). `true` shows the built-in presets — which follow
+   * the ACTIVE calendar tab, so "this year" is the Hebrew year on the Hebrew
+   * tab and the civil year on the Gregorian tab. Pass an array to fully
+   * customize the items. Default false.
+   */
+  presets?: boolean | RangePreset[];
   /** Input-field layer only (DateInput / wrappers): does clicking the input open the
    * picker? Honored for a Gregorian display (Hebrew always opens). Default true. */
   openOnInputClick?: boolean;

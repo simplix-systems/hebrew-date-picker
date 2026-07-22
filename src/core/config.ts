@@ -24,6 +24,15 @@ export const DEFAULT_LABELS: PickerLabels = {
   jumpNextYear: 'שנה קדימה',
   hebrewPreview: 'עברי',
   gregorianPreview: 'לועזי',
+  presetToday: 'היום',
+  presetYesterday: 'אתמול',
+  presetLast7Days: '7 הימים האחרונים',
+  presetLast30Days: '30 הימים האחרונים',
+  presetThisMonth: 'החודש הזה',
+  presetLastMonth: 'החודש שעבר',
+  presetThisYear: 'השנה הזו',
+  presetLastYear: 'השנה שעברה',
+  presetCustom: 'מותאם אישית',
   weekdays: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש']
 };
 
@@ -46,6 +55,15 @@ export const DEFAULT_LABELS_EN: PickerLabels = {
   jumpNextYear: 'Next year',
   hebrewPreview: 'Hebrew',
   gregorianPreview: 'Gregorian',
+  presetToday: 'Today',
+  presetYesterday: 'Yesterday',
+  presetLast7Days: 'Last 7 days',
+  presetLast30Days: 'Last 30 days',
+  presetThisMonth: 'This month',
+  presetLastMonth: 'Last month',
+  presetThisYear: 'This year',
+  presetLastYear: 'Last year',
+  presetCustom: 'Custom',
   weekdays: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
 };
 
