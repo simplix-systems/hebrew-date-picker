@@ -7,6 +7,29 @@ This project follows [Semantic Versioning](https://semver.org/) and the
 ## Unreleased
 
 ### Added
+- **`presets` option (range mode)** — a quick-range sidebar: today, yesterday,
+  last 7/30 days, this/last month, this/last year, plus a "custom" indicator.
+  "This month/year" are **rolling** windows (same day one Hebrew/civil
+  month/year back → today); "last month/year" are the **full** previous
+  month/year — on the Hebrew tab that's 1 Tishrei → 29 Elul. Presets follow the
+  active calendar tab; pass an array of `{ label, range }` to customize.
+  Plumbed through every wrapper (Vue, React, Svelte, Angular, `presets`
+  attribute on the Web Component).
+- **Hard date floor at the Hebrew epoch** — 1 Tishrei, Hebrew year 1
+  (7 September 3761 BCE, proleptic Gregorian). Earlier dates are disabled and
+  navigation (buttons, keyboard, year grids) clamps at the floor. `MIN_DATE` /
+  `MIN_ISO` are exported; `toISO`/`parseISO`/`compareISO` now handle negative
+  (BCE) years correctly.
+- **Millennium letter in the Hebrew years-grid title** — the 20-year block
+  header now shows the full form (ה׳תש״פ – ה׳תשצ״ט, ד׳תק״פ – …) so it's always
+  clear which millennium you're browsing.
+- Vue + Vite example project ready to open on StackBlitz
+  (`examples/stackblitz-vue`).
+
+### Changed
+- The parasha (Shabbat) row in the day tooltip no longer shows a colored dot —
+  it's text-only; holiday rows keep their dots.
+
 - **`DateInput`** — a framework-agnostic input field that opens the picker as a
   popup: calendar icon, clear (×) button, and — for a Gregorian day in single
   mode — inline **masked typing** (`DD/MM/YYYY`) forced to `dir="ltr"` so the mask
