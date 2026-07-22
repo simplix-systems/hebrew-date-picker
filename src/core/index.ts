@@ -38,7 +38,9 @@ export {
   parseISO,
   toISO,
   gregMonthNames,
-  compareISO
+  compareISO,
+  MIN_DATE,
+  MIN_ISO
 } from './dates';
 
 export type {
@@ -58,6 +60,7 @@ export type {
   SingleResult,
   RangeResult,
   PickerResult,
+  RangePreset,
   PickerLabels,
   PickerOptions,
   GlobalConfig

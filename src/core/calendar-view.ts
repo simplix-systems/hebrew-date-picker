@@ -10,7 +10,7 @@ import {
   hebFullString
 } from './hebrew';
 import { getDayEvents } from './jewish-events';
-import { toISO, parseISO, gregMonthNames, compareISO } from './dates';
+import { toISO, parseISO, gregMonthNames, compareISO, MIN_ISO, MIN_DATE, clampToMin } from './dates';
 import type {
   CalendarType,
   Precision,
@@ -245,6 +245,8 @@ export class CalendarView {
   }
 
   private isDisabled(iso: ISODate): boolean {
+    // Hard floor: nothing before the Hebrew epoch (1 Tishrei, year 1).
+    if (compareISO(iso, MIN_ISO) < 0) return true;
     if (this.opt.min && compareISO(iso, this.opt.min) < 0) return true;
     if (this.opt.max && compareISO(iso, this.opt.max) > 0) return true;
     return false;
@@ -399,8 +401,9 @@ export class CalendarView {
     this.weekdayRow();
 
     const grid = el('div', 'hdp-grid');
-    const firstWd = new Date(curY, curM, 1).getDay();
-    const lastDay = new Date(curY, curM + 1, 0).getDate();
+    const first = makeGreg(curY, curM, 1);
+    const firstWd = first.getDay();
+    const lastDay = makeGreg(curY, curM, 31).getDate();
     const rows = Math.ceil((firstWd + lastDay) / 7);
     const total = rows * 7;
     const today = new Date();
@@ -411,7 +414,8 @@ export class CalendarView {
         grid.appendChild(el('div', 'hdp-cell is-blank'));
         continue;
       }
-      const date = new Date(curY, curM, dayNum);
+      const date = new Date(first);
+      date.setDate(dayNum);
       const iso = toISO(date);
       const cell = el('button', 'hdp-cell') as HTMLButtonElement;
       cell.type = 'button';
@@ -446,8 +450,7 @@ export class CalendarView {
       c.textContent = n;
       c.onclick = (e) => {
         e.stopPropagation();
-        const lastD = new Date(curY, i + 1, 0).getDate();
-        this.greg = new Date(curY, i, Math.min(curD, lastD));
+        this.greg = clampToMin(makeGreg(curY, i, curD));
         this.heb = { ...gregToHebParts(this.greg) };
         if (this.opt.precision === 'month') {
           this.commit();
@@ -464,14 +467,21 @@ export class CalendarView {
 
   private renderGregYearsGrid(start: number, selY: number, curM: number, curD: number): void {
     const grid = el('div', 'hdp-mygrid hdp-mygrid-y');
+    const minYear = MIN_DATE.getFullYear();
     for (let y = start; y <= start + YEAR_BLOCK - 1; y++) {
       const c = el('button', 'hdp-mycell' + (y === selY ? ' is-selected' : '')) as HTMLButtonElement;
       c.type = 'button';
       c.textContent = String(y);
+      if (y < minYear) {
+        // before the Hebrew epoch — visible but not selectable
+        c.classList.add('is-disabled');
+        c.disabled = true;
+        grid.appendChild(c);
+        continue;
+      }
       c.onclick = (e) => {
         e.stopPropagation();
-        const lastD = new Date(y, curM + 1, 0).getDate();
-        this.greg = new Date(y, curM, Math.min(curD, lastD));
+        this.greg = clampToMin(makeGreg(y, curM, curD));
         this.heb = { ...gregToHebParts(this.greg) };
         if (this.opt.precision === 'year') {
           this.render(); // reflect the new selection immediately
@@ -489,9 +499,8 @@ export class CalendarView {
   }
 
   private gregHebSubtitle(curY: number, curM: number): string {
-    const start = gregToHebParts(new Date(curY, curM, 1));
-    const lastDay = new Date(curY, curM + 1, 0).getDate();
-    const end = gregToHebParts(new Date(curY, curM, lastDay));
+    const start = gregToHebParts(makeGreg(curY, curM, 1));
+    const end = gregToHebParts(makeGreg(curY, curM, 31));
     const sName = getMonthsForYear(start.year).find((m) => m.num === start.month);
     const eName = getMonthsForYear(end.year).find((m) => m.num === end.month);
     if (!sName || !eName) return '';
@@ -504,16 +513,17 @@ export class CalendarView {
   }
 
   private shiftGregMonth(delta: number): void {
-    const nd = new Date(this.greg.getFullYear(), this.greg.getMonth() + delta, 1);
-    const lastD = new Date(nd.getFullYear(), nd.getMonth() + 1, 0).getDate();
-    this.greg = new Date(nd.getFullYear(), nd.getMonth(), Math.min(this.greg.getDate(), lastD));
+    const raw = this.greg.getMonth() + delta;
+    const ny = this.greg.getFullYear() + Math.floor(raw / 12);
+    const nm = ((raw % 12) + 12) % 12;
+    this.greg = clampToMin(makeGreg(ny, nm, this.greg.getDate()));
     this.heb = { ...gregToHebParts(this.greg) };
     this.render();
   }
   private shiftGregYear(delta: number): void {
-    const ny = this.greg.getFullYear() + delta;
-    const lastD = new Date(ny, this.greg.getMonth() + 1, 0).getDate();
-    this.greg = new Date(ny, this.greg.getMonth(), Math.min(this.greg.getDate(), lastD));
+    this.greg = clampToMin(
+      makeGreg(this.greg.getFullYear() + delta, this.greg.getMonth(), this.greg.getDate())
+    );
     this.heb = { ...gregToHebParts(this.greg) };
     this.render();
   }
@@ -522,9 +532,13 @@ export class CalendarView {
     if (this.yearBlockStart === null) this.yearBlockStart = Math.floor(selY / YEAR_BLOCK) * YEAR_BLOCK;
     return this.yearBlockStart;
   }
-  /** Page the visible 20-year block (and move the selection with it). */
+  /** Page the visible 20-year block (and move the selection with it), never
+   * paging past the block that holds the Hebrew-epoch floor. */
   private pageGregYearBlock(dir: number): void {
-    this.yearBlockStart = this.gregBlockStart(this.greg.getFullYear()) + dir * YEAR_BLOCK;
+    const minBlock = Math.floor(MIN_DATE.getFullYear() / YEAR_BLOCK) * YEAR_BLOCK;
+    const next = this.gregBlockStart(this.greg.getFullYear()) + dir * YEAR_BLOCK;
+    if (next < minBlock) return;
+    this.yearBlockStart = next;
     this.shiftGregYear(dir * YEAR_BLOCK);
   }
 
@@ -678,6 +692,13 @@ export class CalendarView {
       const c = el('button', 'hdp-mycell' + (y === this.heb.year ? ' is-selected' : '')) as HTMLButtonElement;
       c.type = 'button';
       c.textContent = hebYearGematria(y);
+      if (y < 1) {
+        // before the Hebrew epoch — visible but not selectable
+        c.classList.add('is-disabled');
+        c.disabled = true;
+        grid.appendChild(c);
+        continue;
+      }
       c.onclick = (e) => {
         e.stopPropagation();
         this.heb.year = y;
@@ -705,7 +726,9 @@ export class CalendarView {
     return this.yearBlockStart;
   }
   private pageHebYearBlock(dir: number): void {
-    this.yearBlockStart = this.hebBlockStart(this.heb.year) + dir * YEAR_BLOCK;
+    const next = this.hebBlockStart(this.heb.year) + dir * YEAR_BLOCK;
+    if (next < 0) return; // block 0–19 already holds Hebrew year 1
+    this.yearBlockStart = next;
     this.shiftHebYear(dir * YEAR_BLOCK);
   }
 
@@ -716,9 +739,14 @@ export class CalendarView {
     if (idx < 0) idx = 0;
     idx += delta;
     if (idx < 0) {
-      yr -= 1;
-      list = getMonthsForYear(yr);
-      idx = list.length - 1;
+      if (yr - 1 < 1) {
+        // already at Tishrei of Hebrew year 1 — there is no earlier month
+        idx = 0;
+      } else {
+        yr -= 1;
+        list = getMonthsForYear(yr);
+        idx = list.length - 1;
+      }
     } else if (idx >= list.length) {
       yr += 1;
       list = getMonthsForYear(yr);
@@ -747,14 +775,14 @@ export class CalendarView {
     this.render();
   }
   private shiftHebYear(delta: number): void {
-    this.heb.year += delta;
+    this.heb.year = Math.max(1, this.heb.year + delta); // floor: Hebrew year 1
     const ms = getMonthsForYear(this.heb.year);
     if (!ms.find((m) => m.num === this.heb.month)) this.heb.month = ms[0].num;
     this.render();
   }
   /** Day-view full-year jump (keeps the selected day, clamped to the month). */
   private hebYearJump(delta: number): void {
-    this.heb.year += delta;
+    this.heb.year = Math.max(1, this.heb.year + delta); // floor: Hebrew year 1
     const ms = getMonthsForYear(this.heb.year);
     const cur = ms.find((m) => m.num === this.heb.month) || ms[0];
     this.heb.month = cur.num;
@@ -825,10 +853,10 @@ export class CalendarView {
       else if (e.key === 'ArrowDown') dt.setDate(dt.getDate() + 7);
       else if (e.key === 'PageUp') { if (e.shiftKey) dt.setFullYear(dt.getFullYear() - 1); else dt.setMonth(dt.getMonth() - 1); }
       else if (e.key === 'PageDown') { if (e.shiftKey) dt.setFullYear(dt.getFullYear() + 1); else dt.setMonth(dt.getMonth() + 1); }
-      else if (e.key === 'Home') dt = new Date(dt.getFullYear(), dt.getMonth(), 1);
-      else if (e.key === 'End') dt = new Date(dt.getFullYear(), dt.getMonth() + 1, 0);
-      this.greg = dt;
-      this.heb = { ...gregToHebParts(dt) };
+      else if (e.key === 'Home') dt = makeGreg(dt.getFullYear(), dt.getMonth(), 1);
+      else if (e.key === 'End') dt = makeGreg(dt.getFullYear(), dt.getMonth(), 31);
+      this.greg = clampToMin(dt);
+      this.heb = { ...gregToHebParts(this.greg) };
       this.render();
       this.changed();
     } else {
@@ -851,8 +879,8 @@ export class CalendarView {
         this.changed();
         return;
       }
-      this.greg = gr;
-      this.heb = { ...gregToHebParts(gr) };
+      this.greg = clampToMin(gr);
+      this.heb = { ...gregToHebParts(this.greg) };
       this.render();
       this.changed();
     }
@@ -876,8 +904,7 @@ export class CalendarView {
       let yy = this.greg.getFullYear();
       while (mi < 0) { mi += 12; yy -= 1; }
       while (mi > 11) { mi -= 12; yy += 1; }
-      const lastD = new Date(yy, mi + 1, 0).getDate();
-      this.greg = new Date(yy, mi, Math.min(this.greg.getDate(), lastD));
+      this.greg = clampToMin(makeGreg(yy, mi, this.greg.getDate()));
       this.heb = { ...gregToHebParts(this.greg) };
     } else {
       const months = getMonthsForYear(this.heb.year);
@@ -891,7 +918,10 @@ export class CalendarView {
       else if (e.key === 'End') idx = months.length - 1;
       let yy = this.heb.year;
       let list = months;
-      while (idx < 0) { yy -= 1; list = getMonthsForYear(yy); idx += list.length; }
+      while (idx < 0) {
+        if (yy - 1 < 1) { idx = 0; break; } // floor: Tishrei of Hebrew year 1
+        yy -= 1; list = getMonthsForYear(yy); idx += list.length;
+      }
       while (idx >= list.length) { idx -= list.length; yy += 1; list = getMonthsForYear(yy); }
       this.heb.year = yy;
       this.heb.month = list[idx].num;
@@ -904,9 +934,14 @@ export class CalendarView {
     const greg = this.opt.type === 'gregorian';
     const sel = greg ? this.greg.getFullYear() : this.heb.year;
     const start = greg ? this.gregBlockStart(sel) : this.hebBlockStart(sel);
+    const minBlock = greg
+      ? Math.floor(MIN_DATE.getFullYear() / YEAR_BLOCK) * YEAR_BLOCK
+      : 0; // heb block 0–19 holds year 1
     if (e.key === 'PageUp' || e.key === 'PageDown') {
       const dir = e.key === 'PageUp' ? -1 : 1;
-      this.yearBlockStart = start + dir * YEAR_BLOCK;
+      const next = start + dir * YEAR_BLOCK;
+      if (next < minBlock) return;
+      this.yearBlockStart = next;
       if (greg) this.shiftGregYear(dir * YEAR_BLOCK);
       else this.shiftHebYear(dir * YEAR_BLOCK);
       this.changed();
@@ -924,7 +959,7 @@ export class CalendarView {
     let bs = start;
     while (newSel < bs) bs -= YEAR_BLOCK;
     while (newSel > bs + YEAR_BLOCK - 1) bs += YEAR_BLOCK;
-    this.yearBlockStart = bs;
+    this.yearBlockStart = Math.max(minBlock, bs);
     if (greg) this.shiftGregYear(dy);
     else this.shiftHebYear(dy);
     this.changed();
@@ -960,11 +995,14 @@ function attachTip(cell: HTMLElement, events: JewishEvent[]): void {
     events.forEach((e) => {
       const row = document.createElement('div');
       row.className = 'hdp-tip-row hdp-tip-' + e.type;
-      const dot = document.createElement('span');
-      dot.className = 'hdp-tip-dot';
+      // Holiday rows get a colored dot; the parasha (shabbat) row is text-only.
+      if (e.type !== 'shabbat') {
+        const dot = document.createElement('span');
+        dot.className = 'hdp-tip-dot';
+        row.appendChild(dot);
+      }
       const txt = document.createElement('span');
       txt.textContent = e.name;
-      row.appendChild(dot);
       row.appendChild(txt);
       tip.appendChild(row);
     });
@@ -1011,8 +1049,22 @@ function yearRangeLabel(start: number): HTMLElement {
 }
 function yearRangeLabelHeb(start: number): HTMLElement {
   const span = el('div', 'hdp-title-text');
-  span.textContent = `${hebYearGematria(start)} – ${hebYearGematria(start + YEAR_BLOCK - 1)}`;
+  // Full form with the millennium letter (ה׳תשפ״ו, ד׳תשפ״ו, …) so it's always
+  // clear which millennium the visible 20-year block belongs to.
+  span.textContent = `${hebYearGematriaFull(Math.max(1, start))} – ${hebYearGematriaFull(start + YEAR_BLOCK - 1)}`;
   return span;
+}
+function isLeapGreg(y: number): boolean {
+  return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+}
+/** Build a local Date safely for ANY year (incl. 0–99 and negative/BCE years),
+ * clamping the day to the target month's length. */
+function makeGreg(y: number, m: number, day: number): Date {
+  const lengths = [31, isLeapGreg(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  // Construct in a leap year so Feb 29 survives, then stamp the real year.
+  const d = new Date(2000, m, Math.min(day, lengths[m]));
+  d.setFullYear(y);
+  return d;
 }
 function sameDay(a: Date, b: Date): boolean {
   return (
