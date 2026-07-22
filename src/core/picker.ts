@@ -851,8 +851,8 @@ export class DatePicker {
 // ===== Built-in quick-range presets =====
 // Day-based presets (today / yesterday / last N days) are calendar-agnostic.
 // The month & year presets follow the ACTIVE calendar tab:
-//  - "this month" / "this year" are ROLLING windows — from the same day one
-//    month / one year back (Hebrew or civil) up to today;
+//  - "this month" is the FULL current month (day 1 → last day, Hebrew or civil);
+//  - "this year" is a ROLLING window — from the same day one year back up to today;
 //  - "last month" / "last year" are the FULL previous month / year — on the
 //    Hebrew tab "last year" is 1 Tishrei → 29 Elul of the previous Hebrew year.
 
@@ -884,29 +884,23 @@ function hebSameDayLastYear(): Date {
   return hebToGreg(p.year - 1, m.num, p.day) || t;
 }
 
-/** Today's Hebrew day-of-month, one Hebrew month back (day clamped). */
-function hebSameDayLastMonth(): Date {
-  const t = startOfToday();
-  const p = gregToHebParts(t);
-  let year = p.year;
-  let ms = getMonthsForYear(year);
-  let idx = ms.findIndex((m) => m.num === p.month);
-  if (idx < 0) idx = 0;
-  idx -= 1;
-  if (idx < 0) {
-    if (year - 1 < 1) return t;
-    year -= 1;
-    ms = getMonthsForYear(year);
-    idx = ms.length - 1;
-  }
-  return hebToGreg(year, ms[idx].num, p.day) || t;
+/** Full span of the current Hebrew month (day 1 → last day). */
+function hebThisMonthSpan(): { start: ISODate; end: ISODate } {
+  const p = gregToHebParts(startOfToday());
+  const m = hebMonthInYear(p.year, p.month);
+  const first = hebToGreg(p.year, m.num, 1) || startOfToday();
+  return { start: toISO(first), end: toISO(shiftDays(first, m.days - 1)) };
 }
 
-function gregSameDayLastMonth(): Date {
+/** Full span of the current civil month (1st → last day). */
+function gregThisMonthSpan(): { start: ISODate; end: ISODate } {
   const t = startOfToday();
-  const lastD = new Date(t.getFullYear(), t.getMonth(), 0).getDate();
-  return new Date(t.getFullYear(), t.getMonth() - 1, Math.min(t.getDate(), lastD));
+  return {
+    start: toISO(new Date(t.getFullYear(), t.getMonth(), 1)),
+    end: toISO(new Date(t.getFullYear(), t.getMonth() + 1, 0))
+  };
 }
+
 function gregSameDayLastYear(): Date {
   const t = startOfToday();
   const y = t.getFullYear() - 1;
@@ -965,7 +959,7 @@ function builtinPresets(L: PickerLabels): RangePreset[] {
     { label: L.presetYesterday, range: () => { const y = toISO(shiftDays(startOfToday(), -1)); return { start: y, end: y }; } },
     { label: L.presetLast7Days, range: () => rolling(shiftDays(startOfToday(), -6)) },
     { label: L.presetLast30Days, range: () => rolling(shiftDays(startOfToday(), -29)) },
-    { label: L.presetThisMonth, range: (cal) => rolling(cal === 'hebrew' ? hebSameDayLastMonth() : gregSameDayLastMonth()) },
+    { label: L.presetThisMonth, range: (cal) => (cal === 'hebrew' ? hebThisMonthSpan() : gregThisMonthSpan()) },
     { label: L.presetLastMonth, range: (cal) => (cal === 'hebrew' ? hebLastMonthSpan() : gregLastMonthSpan()) },
     { label: L.presetThisYear, range: (cal) => rolling(cal === 'hebrew' ? hebSameDayLastYear() : gregSameDayLastYear()) },
     { label: L.presetLastYear, range: (cal) => (cal === 'hebrew' ? hebLastYearSpan() : gregLastYearSpan()) }

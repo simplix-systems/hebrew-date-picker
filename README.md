@@ -199,7 +199,7 @@ Every option works as a prop (Vue/React/Svelte/Angular) and as a `DatePicker` co
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Overall picker size. |
 | `compact` | `boolean` | `false` | Minimal layout: hides the secondary date, subtitle and preview. |
 | `closeOnSelect` | `boolean` | `true` | Close the popup when a day is picked (ignored when `time` is on — confirm with OK). |
-| `presets` | `boolean \| RangePreset[]` | `false` | Range mode: quick-range sidebar (today, yesterday, last 7/30 days, this/last month, this/last year + custom). "This month/year" are rolling windows — same day one Hebrew/civil month/year back → today; "last month/year" are the full previous month/year (on the Hebrew tab: 1 Tishrei → 29 Elul). Pass an array of `{ label, range }` to customize. |
+| `presets` | `boolean \| RangePreset[]` | `false` | Range mode: quick-range sidebar (today, yesterday, last 7/30 days, this/last month, this/last year + custom). "This month" / "last month/year" are full Hebrew/civil spans (on the Hebrew tab: 1 Tishrei → 29 Elul); "this year" is a rolling window — same day one year back → today. Pass an array of `{ label, range }` to customize. |
 | `labels` | `Partial<PickerLabels>` | — | Override any visible text (see below). |
 
 **Events / binding**

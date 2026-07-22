@@ -9,9 +9,9 @@ This project follows [Semantic Versioning](https://semver.org/) and the
 ### Added
 - **`presets` option (range mode)** — a quick-range sidebar: today, yesterday,
   last 7/30 days, this/last month, this/last year, plus a "custom" indicator.
-  "This month/year" are **rolling** windows (same day one Hebrew/civil
-  month/year back → today); "last month/year" are the **full** previous
-  month/year — on the Hebrew tab that's 1 Tishrei → 29 Elul. Presets follow the
+  "This month" and "last month/year" are **full** Hebrew/civil spans — on the
+  Hebrew tab "last year" is 1 Tishrei → 29 Elul; "this year" is a **rolling**
+  window (same day one Hebrew/civil year back → today). Presets follow the
   active calendar tab; pass an array of `{ label, range }` to customize.
   Plumbed through every wrapper (Vue, React, Svelte, Angular, `presets`
   attribute on the Web Component).
