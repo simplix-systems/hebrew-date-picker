@@ -39,7 +39,7 @@
       background: linear-gradient(120deg, var(--brand), var(--brand-2));
       color: #fff; padding: 26px 24px 30px;
     }
-    .head-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .head-inner { max-width: 1220px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
     .head-text { flex: 1 1 260px; min-width: 0; }
     header h1 { margin: 0 0 4px; font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -.01em; }
     header p { margin: 0; opacity: .92; font-size: 13.5px; }
@@ -61,7 +61,7 @@
     .gh-link:hover { background: rgba(255,255,255,.26); }
 
     /* ---------- Layout ---------- */
-    main { max-width: 1100px; margin: -12px auto 40px; padding: 0 24px; display: grid; gap: 22px; grid-template-columns: 340px 1fr; align-items: start; }
+    main { max-width: 1220px; margin: -12px auto 40px; padding: 0 24px; display: grid; gap: 22px; grid-template-columns: 340px minmax(0, 1fr); align-items: start; }
     @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
 
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
@@ -88,7 +88,10 @@
     /* ---------- Stage ---------- */
     .stage { padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 160px; min-width: 0; position: sticky; top: 20px; max-height: calc(85vh); overflow-y: auto; }
     @media (max-width: 820px) { .stage { position: static; max-height: none; } }
-    .stage-picker { display: flex; justify-content: center; width: 100%; }
+    /* A wide picker (e.g. range + presets) must never clip: scroll inside the
+       stage instead of overflowing the card. `safe center` keeps the start edge
+       reachable when the content is wider than the container. */
+    .stage-picker { display: flex; justify-content: center; justify-content: safe center; width: 100%; max-width: 100%; overflow-x: auto; padding-bottom: 4px; }
     .out { font-size: 14px; color: var(--heading); background: var(--bg); border-radius: 10px; padding: 11px 15px; width: 100%; text-align: center; }
     .out b { color: var(--brand); font-variant-numeric: tabular-nums; }
     .snippet-wrap { width: 100%; min-width: 0; }
@@ -108,6 +111,24 @@
     .di-cal:hover { opacity: .9; }
     .di-clear { position: absolute; inset-inline-end: 9px; top: 50%; transform: translateY(-50%); border: none; background: var(--border); color: var(--heading); width: 21px; height: 21px; border-radius: 50%; cursor: pointer; font-size: 12px; line-height: 1; display: none; }
     .di-clear.show { display: inline-flex; align-items: center; justify-content: center; }
+
+    /* ---------- min / max fields (open the library's own picker) ---------- */
+    .mm-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+    .mm-col { flex: 1 1 120px; min-width: 120px; font-size: 12px; color: var(--muted); }
+    .mm-field { position: relative; display: flex; margin-top: 4px; }
+    .mm-field input {
+      width: 100%; font: inherit; font-size: 13px; padding: 6px 26px 6px 8px; cursor: pointer;
+      border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text);
+    }
+    [dir="ltr"] .mm-field input { padding: 6px 8px; padding-inline-end: 26px; }
+    .mm-field input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+    .mm-clear {
+      position: absolute; inset-inline-end: 5px; top: 50%; transform: translateY(-50%);
+      border: none; background: var(--border); color: var(--heading); width: 18px; height: 18px;
+      border-radius: 50%; cursor: pointer; font-size: 10px; line-height: 1;
+      display: none; align-items: center; justify-content: center;
+    }
+    .mm-clear.show { display: inline-flex; }
   </style>
 </head>
 <body>
@@ -158,6 +179,7 @@
           <label><input type="radio" name="mode" value="single" checked /><span data-i18n="o_single">single</span></label>
           <label><input type="radio" name="mode" value="range" /><span data-i18n="o_range">range</span></label>
         </div>
+        <label class="chk" style="margin-top:8px;"><input type="checkbox" id="presets" /> <span data-i18n="c_presets">presets (quick ranges)</span></label>
       </div>
 
       <div class="row"><label class="title" data-i18n="p_precision">precision</label>
@@ -204,9 +226,19 @@
       <div class="divider"></div>
 
       <div class="row"><label class="title" data-i18n="p_range">min / max</label>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <label style="font-size:12px; color:var(--muted);"><span data-i18n="minLbl">min</span><br/><input type="date" id="minDate" style="font:inherit; font-size:13px; padding:5px 8px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--text);" /></label>
-          <label style="font-size:12px; color:var(--muted);"><span data-i18n="maxLbl">max</span><br/><input type="date" id="maxDate" style="font:inherit; font-size:13px; padding:5px 8px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--text);" /></label>
+        <div class="mm-wrap">
+          <div class="mm-col"><span data-i18n="minLbl">min</span>
+            <div class="mm-field">
+              <input type="text" id="minDate" readonly data-i18n-ph="pickDate" />
+              <button type="button" class="mm-clear" id="minClear">✕</button>
+            </div>
+          </div>
+          <div class="mm-col"><span data-i18n="maxLbl">max</span>
+            <div class="mm-field">
+              <input type="text" id="maxDate" readonly data-i18n-ph="pickDate" />
+              <button type="button" class="mm-clear" id="maxClear">✕</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -280,7 +312,8 @@
         c_outside: 'ימי חודש קודם/הבא', c_diaspora: 'חו״ל (diaspora)', c_compact: 'מצומצם', c_rounded: 'תאים עגולים', c_headerBorder: 'מסגרת סביב כפתורי הכותרת',
         s_time: 'שעה', c_time: 'בורר שעה', c_seconds: 'שניות', ts_native: 'מכשיר', ts_clock: 'שעון',
         result: 'תוצאה', typed: 'הוקלד', pasted: 'הודבק', calWord: 'לוח', rangeWord: 'טווח', clickToPick: 'לחצו לבחירת תאריך', clearTitle: 'נקה', copy: 'העתק', copied: 'הועתק ✓',
-        openOnInput: 'פתיחה בלחיצה על ה-input', p_range: 'טווח תאריכים (min / max)', minLbl: 'מ-', maxLbl: 'עד'
+        openOnInput: 'פתיחה בלחיצה על ה-input', p_range: 'טווח תאריכים (min / max)', minLbl: 'מ-', maxLbl: 'עד',
+        pickDate: 'בחירת תאריך', c_presets: 'טווחים מהירים (presets)'
       },
       en: {
         title: 'Hebrew Date Picker', subtitle: 'Play with every prop — the picker updates live', kbd: 'Keyboard shortcuts test',
@@ -293,7 +326,8 @@
         c_outside: 'outsideDays', c_diaspora: 'diaspora', c_compact: 'compact', c_rounded: 'rounded', c_headerBorder: 'headerBorder (frame the header buttons)',
         s_time: 'Time', c_time: 'time (time picker)', c_seconds: 'seconds', ts_native: 'native', ts_clock: 'clock',
         result: 'Result', typed: 'typed', pasted: 'pasted', calWord: 'cal', rangeWord: 'range', clickToPick: 'Click to pick a date', clearTitle: 'Clear', copy: 'Copy', copied: 'Copied ✓',
-        openOnInput: 'openOnInputClick', p_range: 'date range (min / max)', minLbl: 'min', maxLbl: 'max'
+        openOnInput: 'openOnInputClick', p_range: 'date range (min / max)', minLbl: 'min', maxLbl: 'max',
+        pickDate: 'Pick a date', c_presets: 'presets (quick ranges)'
       }
     };
     let uiLang = 'he';
@@ -325,6 +359,7 @@
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
       document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+      document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
       document.querySelectorAll('[data-lang]').forEach((b) => b.classList.toggle('active', b.dataset.lang === lang));
       rebuild();
     }
@@ -348,10 +383,9 @@
         displayCalendar: val('displayCalendar'), closeOnSelect: chk('closeOnSelect'),
         openOnInputClick: chk('openOnInputClick')
       };
-      const minV = document.getElementById('minDate').value;
-      const maxV = document.getElementById('maxDate').value;
-      if (minV) o.min = minV;
-      if (maxV) o.max = maxV;
+      if (minISO) o.min = minISO;
+      if (maxISO) o.max = maxISO;
+      if (o.mode === 'range' && chk('presets')) o.presets = true;
       if (chk('usecolor')) o.primaryColor = document.getElementById('primaryColor').value;
       return o;
     }
@@ -409,6 +443,51 @@
 
     let picker = null;
     let currentValue = null; // string ISO (single) | { start, end } (range) | null
+
+    /* ------- min / max — picked with the library's own picker (not the native input) ------- */
+    let minISO = '', maxISO = '';
+    let mmPicker = null; // the currently-open min/max popup
+    function refreshMinMax() {
+      const pairs = [['minDate', 'minClear', minISO], ['maxDate', 'maxClear', maxISO]];
+      for (const [inputId, clearId, iso] of pairs) {
+        const input = document.getElementById(inputId);
+        input.value = iso ? fmtInput(iso, { displayCalendar: val('calendar'), precision: 'day' }) : '';
+        input.title = iso;
+        document.getElementById(clearId).classList.toggle('show', !!iso);
+      }
+    }
+    function wireMinMax(which) {
+      const input = document.getElementById(which + 'Date');
+      const clearBtn = document.getElementById(which + 'Clear');
+      input.addEventListener('click', () => {
+        mmPicker?.close();
+        mmPicker = new DatePicker({
+          calendar: val('calendar'),
+          lang: uiLang,
+          theme: resolveTheme(),
+          size: 'sm',
+          value: (which === 'min' ? minISO : maxISO) || null,
+          // keep the pair consistent: min can never pass max and vice-versa
+          min: which === 'max' ? (minISO || null) : null,
+          max: which === 'min' ? (maxISO || null) : null,
+          closeOnSelect: true,
+          onSelect: (r) => {
+            if (which === 'min') minISO = r.iso || ''; else maxISO = r.iso || '';
+            refreshMinMax();
+            rebuild();
+          }
+        }).open(input);
+      });
+      clearBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (which === 'min') minISO = ''; else maxISO = '';
+        mmPicker?.close();
+        refreshMinMax();
+        rebuild();
+      });
+    }
+    wireMinMax('min');
+    wireMinMax('max');
 
     function applyColor() {
       if (chk('usecolor')) {
@@ -574,13 +653,13 @@
       outsideDays: true, diaspora: false, compact: false, rounded: false,
       headerBorder: true, time: false, seconds: false, timeFormat: '24',
       timeStyle: 'native', displayCalendar: 'hebrew', closeOnSelect: true,
-      openOnInputClick: true, lang: 'he', theme: 'light'
+      openOnInputClick: true, lang: 'he', theme: 'light', presets: false
     };
     // Which props to surface, and only when they differ from the default.
     function activeProps() {
       const o = lastOpts;
       const keep = (k) => o[k] !== undefined && o[k] !== '' && o[k] !== DEF[k];
-      const order = ['calendar','mode','precision','size','theme','lang','displayCalendar',
+      const order = ['calendar','mode','presets','precision','size','theme','lang','displayCalendar',
         'min','max','rounded','headerBorder','highlightHolidays','highlightShabbat','showParasha',
         'outsideDays','diaspora','compact','time','seconds','timeFormat','timeStyle',
         'closeOnSelect','openOnInputClick','primaryColor'];
@@ -633,6 +712,7 @@
         const lines = [];
         if (o.calendar) lines.push(`->calendar('${o.calendar}')`);
         if (o.mode === 'range') lines.push('->range()');
+        if (o.presets) lines.push('->presets()');
         if (o.precision === 'month') lines.push('->monthOnly()');
         if (o.precision === 'year') lines.push('->yearOnly()');
         if (o.time) lines.push('->time()');
@@ -685,6 +765,7 @@
 
       lastOpts = opts;
       lastIsInput = chk('showInput');
+      refreshMinMax(); // re-format the min/max fields for the active calendar
       renderSnippet();
     }
 
