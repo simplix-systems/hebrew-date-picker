@@ -213,7 +213,7 @@
 .hdp-gem-sm { font-size: 9px; color: var(--hdp-muted); line-height: 1; margin-top: 1px; }
 /* In the Gregorian view the civil number (.hdp-num) is the PRIMARY figure, so
    make it large & in the main text color (the small Hebrew gematria sits below). */
-.hdp-cal-greg .hdp-num { font-size: 16px; font-weight: 600; color: var(--hdp-text); }
+.hdp-cal-greg .hdp-num { font-size: 13px; font-weight: 600; color: var(--hdp-text); }
 .hdp-cal-greg.is-selected .hdp-num, .hdp-cal-greg .hdp-cell.is-selected .hdp-num { color: var(--hdp-on-primary); }
 
 /* event dot marker */
@@ -396,7 +396,7 @@
 .hdp.hdp-size-sm .hdp-gem { font-size: 11px; }
 .hdp.hdp-size-sm .hdp-cal-hebrew .hdp-num { font-size: 8px; }   /* secondary civil number */
 .hdp.hdp-size-sm .hdp-cal-greg .hdp-num { font-size: 13px; }    /* primary civil number */
-.hdp.hdp-size-sm .hdp-gem-sm { font-size: 8px; }
+.hdp.hdp-size-sm .hdp-gem-sm { font-size: 10px; }
 /* smaller header controls so nothing overflows the narrow sm frame */
 .hdp.hdp-size-sm .hdp-nav { width: 26px; height: 26px; font-size: 15px; }
 .hdp.hdp-size-sm .hdp-nav-year { width: 22px; font-size: 13px; }
