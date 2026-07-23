@@ -1,6 +1,6 @@
 {
   "name": "@simplix-systems/hebrew-date-picker",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "A beautiful, fully-featured Hebrew & Gregorian date picker with holidays, Parashat HaShavua, range selection and keyboard shortcuts. Framework-agnostic core with Vue, React, Svelte and Angular wrappers.",
   "keywords": [
     "datepicker",
